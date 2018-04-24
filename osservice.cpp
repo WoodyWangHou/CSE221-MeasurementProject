@@ -3,6 +3,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint>
+#include <vector>
+#include <math.h>
+
+/*****************************************************
+* Constructor Implementation:
+*****************************************************/
 
 OsService::OsService(){
   //constructor
@@ -14,7 +20,7 @@ OsService::OsService(){
   uint64_t end_low;
 
 // record start time
-  asm   volatile (
+  asm volatile (
          "CPUID\n\t"/*serialize*/
          "RDTSC\n\t"/*read the clock*/
          "mov %%edx, %0\n\t"
@@ -35,6 +41,10 @@ OsService::OsService(){
   _t_per_cycle_ms = (end - start) / SLEEP_TIME_SEC * SEC_TO_MSEC;
 }
 
+/*****************************************************
+* Private Members Implementation:
+*****************************************************/
+
 static uint64_t OsService::getCPUCycles(){
   uint64_t high;
   uint64_t low;
@@ -49,21 +59,34 @@ static uint64_t OsService::getCPUCycles(){
   return (((uint64_t)high << 32) | low );
 }
 
-uint64_t OsService::convertCyclesToTime(uint64_t cycles){
+static double OsService::stddev(std::vector<double> input, double avg){
+  double sd = 0.0;
+  for(double i : input){
+    sd += std::pow(i - avg, 2.0);
+  }
 
+  sd /= static_cast<double>(input.size());
+  sd = std::pow(sd, 0.5);
+
+  return sd;
 }
 
-uint64_t OsService::testThreadContextSwitchTime(){
+/*****************************************************
+* Public Members Implementation:
+*****************************************************/
 
 
+void OsService::testThreadContextSwitchTime(){
+  
 }
 
-uint64_t OsService::testProcContextSwitchTime(uint64_t iter){
+void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res){
   int pipes[2];
   pid_t pid;
-  uint64_t end; // used as buffer
-  uint64_t start;
-  uint64_t total_cycles;
+  uint64_t end = 0; // used as buffer
+  uint64_t start = 0;
+  std::vector<double> times;
+  uint64_t total_cycles = 0;
 
   for(uint64_t i = 0; i < iter; i++){
     if(pipe(pipes) == -1){
@@ -96,12 +119,12 @@ uint64_t OsService::testProcContextSwitchTime(uint64_t iter){
       close(pipes[1]);
     }
 
-    total_cycles += end - start; //accumulate cycles
+    uint64_t cur = end - start;
+    times.push_back((double)cur / iter / (double)_t_per_cycle_ms); //accumulate cycles
+    total_cycles += cur;
   }
 
-  uint64_t avg_cycles = total_cycles / iter;
-
-
-
-
+  res = (double)(total_cycles / iter) / (double)_t_per_cycle_ms; // res in ms
+  dv = OsService::stddev(times , res);
+  return;
 }

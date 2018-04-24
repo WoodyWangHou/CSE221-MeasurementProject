@@ -10,13 +10,12 @@ const uint64_t SEC_TO_MSEC = 1000;
 class OsService{
   private:
     uint64_t _t_per_cycle_ms;
-    static uint64_t getTimeStamp();
-    static double stddev(std::vector<uint64_t> input);
-    static uint64_t convertCyclesToTime(uint64_t cycles);
+    static uint64_t getCPUCycles();
+    static double stddev(std::vector<double> input, double avg);
 
   public:
-    uint64_t testThreadContextSwitchTime();
-    uint64_t testProcContextSwitchTime();
+    void testThreadContextSwitchTime(uint64_t iter, double &dv, double &res);
+    void testProcContextSwitchTime(uint64_t iter, double &dv, double &res);
 }
 
 #endif
