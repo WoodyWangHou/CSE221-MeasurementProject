@@ -1,8 +1,8 @@
 CC=g++
 CFLAGS=-ggdb -std=c++11 -Wall -pedantic -pthread
 
-H_FILES=osservice.hpp
-FILES=osservice.cpp cpu-main.cpp
+H_FILES=osservice.hpp overheads.hpp timer.hpp 
+FILES=osservice.cpp overheads.cpp timer.cpp cpu-main.cpp
 
 all: cpu_test
 
