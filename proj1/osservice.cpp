@@ -28,11 +28,11 @@ implementation of testing procedures: context switching time measurement
 OsService::OsService(){
   //constructor
   OsService::_t_per_cycle_ms = 0;
-  uint64_t start_high;
-  uint64_t start_low;
+  uint32_t start_high;
+  uint32_t start_low;
 
-  uint64_t end_high;
-  uint64_t end_low;
+  uint32_t end_high;
+  uint32_t end_low;
 
 // record start time
   asm volatile (
@@ -44,7 +44,8 @@ OsService::OsService(){
 
   sleep(SLEEP_TIME_SEC);
 
-  asm volatile ("rdtscp\n\t"
+  asm volatile (
+      "rdtscp\n\t"
 		  "mov %%edx, %0\n\t"
 		  "mov %%eax, %1\n\t"
 		  "cpuid\n\t"
@@ -61,8 +62,8 @@ OsService::OsService(){
 *****************************************************/
 
 uint64_t OsService::getCPUCycles(){
-  uint64_t high;
-  uint64_t low;
+  uint32_t high;
+  uint32_t low;
 
   asm volatile ("rdtscp\n\t"
 		  "mov %%edx, %0\n\t"
