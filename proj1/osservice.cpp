@@ -136,7 +136,7 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
 
     if(end > start){
       uint64_t cur = end - start;
-      times.push_back((double)cur / (double)_cycles_per_ms); //accumulate cycles
+      times.push_back(((double)cur / (double)_cycles_per_ms) / 2.0); //accumulate cycles
       total_cycles += cur;
       count++;
     }
@@ -145,7 +145,7 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
   close(pipes[0]);
   close(pipes[1]);
 
-  res = (double)(total_cycles / count) / (double)_cycles_per_ms; // res in ms
+  res = ((double)(total_cycles / count) / (double)_cycles_per_ms) / 2.0; // res in ms
   dv = OsService::stddev(times , res);
   return;
 }
