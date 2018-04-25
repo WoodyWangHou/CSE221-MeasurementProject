@@ -1,20 +1,27 @@
-cycle/s2204131
-cycle/s2206322
+cycle/s2205292
+cycle/s2204377
+cycle/s2195837
 *******************************
 Process Context Switch Time Measurement
 *******************************
 Iterations: 1000
-The measured average process context switch time: 0.100974ms
-The measured process context switch time standard deviation: 0.011292ms
+The measured average process context switch time: 0.104164ms
+The measured process context switch time standard deviation: 0.015140ms
 *******************************
 Threads Context Switch Time Measurement
 *******************************
 Iterations: 1000
-The measured average process context switch time: 0.006499ms
-The measured process context switch time standard deviation: 0.002505ms
+The measured average process context switch time: 0.006065ms
+The measured process context switch time standard deviation: 0.002001ms
 *******************************
 Read Operation Overhead Measurement
 *******************************
 Iterations: 1000
-The measured average read operation overhead: 0.000385ms
-The measured standard deviation of read operation overhead: 0.000003ms
+The measured average read operation overhead: 0.000347ms
+The measured standard deviation of read operation overhead: 0.000457ms
+*******************************
+Loop Operation Overhead Measurement
+*******************************
+Iterations: 1000
+The measured average Loop operation overhead: 0.000004ms
+The measured standard deviation of loop operation overhead: 0.000001ms

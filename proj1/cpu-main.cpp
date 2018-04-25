@@ -23,12 +23,15 @@ int main(){
   double proc_ctx_stdv;
 
   Overheads overHeadTest;
-  double read_op_res;
-  double read_op_stdv;
+  double read_op_res, loop_op_res;
+  double read_op_stdv, loop_op_std;
+
+
 
 
   test.testProcContextSwitchTime(ITERATION, proc_ctx_stdv, proc_ctx_res);
   overHeadTest.testReadOverhead(ITERATION, read_op_stdv, read_op_res);
+  overHeadTest.testLoopOverhead(ITERATION, loop_op_std, loop_op_res);
 
 
   std::cout << DELIMITER << "\n";
@@ -57,6 +60,16 @@ int main(){
   std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
   std::cout << "The measured average read operation overhead: " + std::to_string(read_op_res) + "ms" << '\n';
   std::cout << "The measured standard deviation of read operation overhead: " + std::to_string(read_op_stdv) + "ms" << '\n';
+
+
+  // Loop Operation Overhead Measurement Result;
+  std::cout << DELIMITER << "\n";
+  std::cout << "Loop Operation Overhead Measurement" <<"\n";
+  std::cout << DELIMITER << "\n";
+
+  std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
+  std::cout << "The measured average Loop operation overhead: " + std::to_string(loop_op_res) + "ms" << '\n';
+  std::cout << "The measured standard deviation of loop operation overhead: " + std::to_string(loop_op_std) + "ms" << '\n';
 
 
 
