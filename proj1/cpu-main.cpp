@@ -23,15 +23,29 @@ int main(){
   double proc_ctx_stdv;
 
   Overheads overHeadTest;
-  double read_op_res, loop_op_res;
-  double read_op_stdv, loop_op_std;
+  double read_op_res, loop_op_res, func_call_res[8];
+  double read_op_stdv, loop_op_std, func_call_std[8];
+
+
 
 
 
 
   test.testProcContextSwitchTime(ITERATION, proc_ctx_stdv, proc_ctx_res);
+
+  // read and loop overhead test
   overHeadTest.testReadOverhead(ITERATION, read_op_stdv, read_op_res);
   overHeadTest.testLoopOverhead(ITERATION, loop_op_std, loop_op_res);
+
+  // procedure call overhead test
+  overHeadTest.testProcedureCallOverhead0(ITERATION, func_call_std[0], func_call_res[0]);
+  overHeadTest.testProcedureCallOverhead1(ITERATION, func_call_std[1], func_call_res[1]);
+  overHeadTest.testProcedureCallOverhead2(ITERATION, func_call_std[2], func_call_res[2]);
+  overHeadTest.testProcedureCallOverhead3(ITERATION, func_call_std[3], func_call_res[3]);
+  overHeadTest.testProcedureCallOverhead4(ITERATION, func_call_std[4], func_call_res[4]);
+  overHeadTest.testProcedureCallOverhead5(ITERATION, func_call_std[5], func_call_res[5]);
+  overHeadTest.testProcedureCallOverhead6(ITERATION, func_call_std[6], func_call_res[6]);
+  overHeadTest.testProcedureCallOverhead7(ITERATION, func_call_std[7], func_call_res[7]);
 
 
   std::cout << DELIMITER << "\n";
@@ -70,6 +84,17 @@ int main(){
   std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
   std::cout << "The measured average Loop operation overhead: " + std::to_string(loop_op_res) + "ms" << '\n';
   std::cout << "The measured standard deviation of loop operation overhead: " + std::to_string(loop_op_std) + "ms" << '\n';
+
+
+  for (int i = 0; i < 8; i++) {
+      std::cout << DELIMITER << "\n";
+      std::cout << "Procedure call Operation Overhead Measurement, " << std::to_string(i) << " parameters." <<"\n";
+      std::cout << DELIMITER << "\n";
+
+      std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
+      std::cout << "The measured average procedure call Operation overhead: " + std::to_string(func_call_res[i]) + "ms" << '\n';
+      std::cout << "The measured standard deviation of procedure call Operation overhead: " + std::to_string(func_call_std[i]) + "ms" << '\n';
+  }
 
 
 
