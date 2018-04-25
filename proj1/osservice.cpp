@@ -1,8 +1,23 @@
-#include "osservice.h"
-#include  <sys/types.h>
+/******************************************************************************************
+Project: UCSD CSE221 Course Project: CPU and OS Services Measurement
+
+Author:
+1. Hou Wang
+2. Jinhao Tang
+3. Zhenghong You
+
+osservice.cpp:
+implementation of testing procedures: context switching time measurement
+*******************************************************************************************/
+
+#include "osservice.hpp"
+#include <iostream>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
+#include <pthread.h>
 #include <stdlib.h>
-#include <stdint>
+#include <cstdint>
 #include <vector>
 #include <math.h>
 
@@ -25,7 +40,7 @@ OsService::OsService(){
          "RDTSC\n\t"/*read the clock*/
          "mov %%edx, %0\n\t"
          "mov %%eax, %1\n\t": "=r" (start_high), "=r" (start_low)
-         :: "%rax", "%rbx", "%rcx", "%rdx");
+         :: "%eax", "%ebx", "%ecx", "%edx");
 
   sleep(SLEEP_TIME_SEC);
 
@@ -34,7 +49,7 @@ OsService::OsService(){
 		  "mov %%eax, %1\n\t"
 		  "cpuid\n\t"
 		  : "=r" (end_high), "=r" (end_low)
-		  :: "%rax", "%rbx", "%rcx", "%rdx");
+		  :: "%eax", "%ebx", "%ecx", "%edx");
 
   uint64_t start = (((uint64_t)start_high << 32) | start_low );
   uint64_t end = (((uint64_t)end_high << 32) | end_low );
@@ -45,7 +60,7 @@ OsService::OsService(){
 * Private Members Implementation:
 *****************************************************/
 
-static uint64_t OsService::getCPUCycles(){
+uint64_t OsService::getCPUCycles(){
   uint64_t high;
   uint64_t low;
 
@@ -54,19 +69,19 @@ static uint64_t OsService::getCPUCycles(){
 		  "mov %%eax, %1\n\t"
 		  "cpuid\n\t"
 		  : "=r" (high), "=r" (low)
-		  :: "%rax", "%rbx", "%rcx", "%rdx");
+		  :: "%eax", "%ebx", "%ecx", "%edx");
 
   return (((uint64_t)high << 32) | low );
 }
 
-static double OsService::stddev(std::vector<double> input, double avg){
+double OsService::stddev(std::vector<double> input, double avg){
   double sd = 0.0;
   for(double i : input){
-    sd += std::pow(i - avg, 2.0);
+    sd += pow(i - avg, 2.0);
   }
 
   sd /= static_cast<double>(input.size());
-  sd = std::pow(sd, 0.5);
+  sd = pow(sd, 0.5);
 
   return sd;
 }
@@ -76,12 +91,17 @@ static double OsService::stddev(std::vector<double> input, double avg){
 *****************************************************/
 
 
-void OsService::testThreadContextSwitchTime(){
+void OsService::testThreadContextSwitchTime(uint64_t iter, double &dv, double &res){
 
 }
 
 void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res){
   int pipes[2];
+  if(pipe(pipes) == -1){
+    std::cout << "pipes create failed" << "\n";
+    exit(EXIT_FAILURE);
+  }
+
   pid_t pid;
   uint64_t end = 0; // used as buffer
   uint64_t start = 0;
@@ -89,11 +109,6 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
   uint64_t total_cycles = 0;
 
   for(uint64_t i = 0; i < iter; i++){
-    if(pipe(pipes) == -1){
-      std::cout << "pipes create failed" << "\n";
-      exit(EXIT_FAILURE);
-    }
-
     pid = fork();
     switch(pid){
       case -1:
@@ -115,14 +130,15 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
       read(pipes[0], &end, sizeof(end)); // blocked until child process write its end cycle
 
       wait(NULL); // wait for child process to finish
-      close(pipes[0]);
-      close(pipes[1]);
     }
 
     uint64_t cur = end - start;
     times.push_back((double)cur / iter / (double)_t_per_cycle_ms); //accumulate cycles
     total_cycles += cur;
   }
+
+  close(pipes[0]);
+  close(pipes[1]);
 
   res = (double)(total_cycles / iter) / (double)_t_per_cycle_ms; // res in ms
   dv = OsService::stddev(times , res);
