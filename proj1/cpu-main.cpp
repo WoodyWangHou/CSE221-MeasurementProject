@@ -12,7 +12,7 @@ main testing procedures
 
 #include <iostream>
 #include "osservice.hpp"
-
+#include "overheads.hpp"
 int main(){
   // declare common output format
   const std::string DELIMITER = "*******************************";
@@ -22,7 +22,14 @@ int main(){
   double proc_ctx_res;
   double proc_ctx_stdv;
 
+  Overheads overHeadTest;
+  double read_op_res;
+  double read_op_stdv;
+
+
   test.testProcContextSwitchTime(ITERATION, proc_ctx_stdv, proc_ctx_res);
+  overHeadTest.testReadOverhead(ITERATION, read_op_stdv, read_op_res);
+
 
   std::cout << DELIMITER << "\n";
   std::cout << "Process Context Switch Time Measurement" <<"\n";
@@ -41,6 +48,21 @@ int main(){
   std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
   std::cout << "The measured average process context switch time: " + std::to_string(proc_ctx_res) + "ms" << '\n';
   std::cout << "The measured process context switch time standard deviation: " + std::to_string(proc_ctx_stdv) + "ms" << '\n';
+
+  // Read Operation Overhead Measurement Result;
+  std::cout << DELIMITER << "\n";
+  std::cout << "Read Operation Overhead Measurement" <<"\n";
+  std::cout << DELIMITER << "\n";
+
+  std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
+  std::cout << "The measured average read operation overhead: " + std::to_string(read_op_res) + "ms" << '\n';
+  std::cout << "The measured standard deviation of read operation overhead: " + std::to_string(read_op_stdv) + "ms" << '\n';
+
+
+
+
+
+
 
   return 0;
 }
