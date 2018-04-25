@@ -32,5 +32,15 @@ int main(){
   std::cout << "The measured average process context switch time: " + std::to_string(proc_ctx_res) + "ms" << '\n';
   std::cout << "The measured process context switch time standard deviation: " + std::to_string(proc_ctx_stdv) + "ms" << '\n';
 
+  test.testThreadContextSwitchTime(ITERATION, proc_ctx_stdv, proc_ctx_res);
+
+  std::cout << DELIMITER << "\n";
+  std::cout << "Threads Context Switch Time Measurement" <<"\n";
+  std::cout << DELIMITER << "\n";
+
+  std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
+  std::cout << "The measured average process context switch time: " + std::to_string(proc_ctx_res) + "ms" << '\n';
+  std::cout << "The measured process context switch time standard deviation: " + std::to_string(proc_ctx_stdv) + "ms" << '\n';
+
   return 0;
 }

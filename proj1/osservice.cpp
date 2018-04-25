@@ -91,9 +91,50 @@ double OsService::stddev(std::vector<double> input, double avg){
 * Public Members Implementation:
 *****************************************************/
 
+void *testThreads(void *end){
+  uint32_t high;
+  uint32_t low;
+
+  asm volatile ("rdtscp\n\t"
+      "mov %%edx, %0\n\t"
+      "mov %%eax, %1\n\t"
+      "cpuid\n\t"
+      : "=r" (high), "=r" (low)
+      :: "%eax", "%ebx", "%ecx", "%edx");
+  uint64_t *res = (uint64_t *)end;
+  *res = (((uint64_t)high << 32) | low );
+  pthread_exit(NULL);
+}
 
 void OsService::testThreadContextSwitchTime(uint64_t iter, double &dv, double &res){
+  pthread_t tid;
+  uint64_t start = 0;
+  uint64_t end = 0;
+  std::vector<double> times;
+  uint64_t total_cycles = 0;
+  uint64_t count = 0;
 
+  for(uint64_t i = 0; i < iter; i++){
+    start = OsService::getCPUCycles();
+    if(pthread_create(&tid, NULL, &testThreads, &end) != 0){
+      std::cout << "threads create failed" << "\n";
+      exit(EXIT_FAILURE);
+    }else{
+      sched_yield();
+    }
+    pthread_join(tid, NULL);
+
+    if(end > start){
+      uint64_t cur = end - start;
+      times.push_back(((double)cur / (double)_cycles_per_ms) / 2.0); //accumulate cycles
+      total_cycles += cur;
+      count++;
+    }
+  }
+
+  res = ((double)(total_cycles / count) / (double)_cycles_per_ms) / 2.0; // res in ms
+  dv = OsService::stddev(times , res);
+  return;
 }
 
 void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res){

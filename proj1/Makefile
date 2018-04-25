@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-ggdb -std=c++11 -Wall -pedantic
+CFLAGS=-ggdb -std=c++11 -Wall -pedantic -pthread
 
 H_FILES=osservice.hpp
 FILES=osservice.cpp cpu-main.cpp
