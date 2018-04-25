@@ -1,4 +1,5 @@
 #!/bin/bash
+make clean
 make
 rm project1_result.txt
 
