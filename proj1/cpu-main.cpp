@@ -15,7 +15,7 @@ main testing procedures
 
 int main(){
   const std::string DELIMITER = "*******************************";
-  const uint64_t ITERATION = 100;
+  const uint64_t ITERATION = 2000;
 
   OsService test;
   double proc_ctx_res;

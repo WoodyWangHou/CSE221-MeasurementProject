@@ -55,7 +55,6 @@ OsService::OsService(){
   uint64_t start = (((uint64_t)start_high << 32) | start_low );
   uint64_t end = (((uint64_t)end_high << 32) | end_low );
   _t_per_cycle_ms = (end - start) / SLEEP_TIME_SEC / SEC_TO_MSEC;
-  std::cout << std::to_string(_t_per_cycle_ms) << '\n';
 }
 
 /*****************************************************
@@ -109,6 +108,7 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
   uint64_t start = 0;
   std::vector<double> times;
   uint64_t total_cycles = 0;
+  uint64_t count = 0; //count of valid measure
 
   for(uint64_t i = 0; i < iter; i++){
     pid = fork();
@@ -134,15 +134,18 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
       wait(NULL); // wait for child process to finish
     }
 
-    uint64_t cur = end - start;
-    times.push_back((double)cur / iter / (double)_t_per_cycle_ms); //accumulate cycles
-    total_cycles += cur;
+    if(end > start){
+      uint64_t cur = end - start;
+      times.push_back((double)cur / (double)_t_per_cycle_ms); //accumulate cycles
+      total_cycles += cur;
+      count++;
+    }
   }
 
   close(pipes[0]);
   close(pipes[1]);
 
-  res = (double)(total_cycles / iter) / (double)_t_per_cycle_ms; // res in ms
+  res = (double)(total_cycles / count) / (double)_t_per_cycle_ms; // res in ms
   dv = OsService::stddev(times , res);
   return;
 }
