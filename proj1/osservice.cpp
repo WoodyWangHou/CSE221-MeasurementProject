@@ -27,7 +27,7 @@ implementation of testing procedures: context switching time measurement
 
 OsService::OsService(){
   //constructor
-  OsService::_t_per_cycle_ms = 0;
+  OsService::_cycles_per_ms = 0;
   uint32_t start_high;
   uint32_t start_low;
 
@@ -54,7 +54,7 @@ OsService::OsService(){
 
   uint64_t start = (((uint64_t)start_high << 32) | start_low );
   uint64_t end = (((uint64_t)end_high << 32) | end_low );
-  _t_per_cycle_ms = (end - start) / SLEEP_TIME_SEC / SEC_TO_MSEC;
+  _cycles_per_ms = (end - start) / SLEEP_TIME_SEC / SEC_TO_MSEC;
 }
 
 /*****************************************************
@@ -136,7 +136,7 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
 
     if(end > start){
       uint64_t cur = end - start;
-      times.push_back((double)cur / (double)_t_per_cycle_ms); //accumulate cycles
+      times.push_back((double)cur / (double)_cycles_per_ms); //accumulate cycles
       total_cycles += cur;
       count++;
     }
@@ -145,7 +145,7 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
   close(pipes[0]);
   close(pipes[1]);
 
-  res = (double)(total_cycles / count) / (double)_t_per_cycle_ms; // res in ms
+  res = (double)(total_cycles / count) / (double)_cycles_per_ms; // res in ms
   dv = OsService::stddev(times , res);
   return;
 }

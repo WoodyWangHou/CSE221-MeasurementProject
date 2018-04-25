@@ -1,0 +1,83 @@
+*******************************
+Process Context Switch Time Measurement
+*******************************
+The measured average process context switch time: 0.053879ms
+The measured process context switch time standard deviation: 0.061535ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+The measured average process context switch time: 0.234971ms
+The measured process context switch time standard deviation: 1.623416ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+The measured average process context switch time: 0.054781ms
+The measured process context switch time standard deviation: 0.044695ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+The measured average process context switch time: 0.080402ms
+The measured process context switch time standard deviation: 0.281985ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+The measured average process context switch time: 0.059044ms
+The measured process context switch time standard deviation: 0.108981ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+The measured average process context switch time: 0.081038ms
+The measured process context switch time standard deviation: 0.233255ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+The measured average process context switch time: 0.052895ms
+The measured process context switch time standard deviation: 0.164859ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+The measured average process context switch time: 0.118090ms
+The measured process context switch time standard deviation: 0.371929ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+Iterations: 100
+The measured average process context switch time: 0.092287ms
+The measured process context switch time standard deviation: 0.360968ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+Iterations: 100
+The measured average process context switch time: 0.079443ms
+The measured process context switch time standard deviation: 0.023599ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+Iterations: 1000
+The measured average process context switch time: 0.082814ms
+The measured process context switch time standard deviation: 0.418916ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+Iterations: 1000
+The measured average process context switch time: 0.054553ms
+The measured process context switch time standard deviation: 0.038529ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+Iterations: 1000
+The measured average process context switch time: 0.062170ms
+The measured process context switch time standard deviation: 0.189434ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+Move mouse frequently : does affect measurement
+Iterations: 1000
+The measured average process context switch time: 0.512619ms
+The measured process context switch time standard deviation: 2.357852ms
+*******************************
+Process Context Switch Time Measurement
+*******************************
+Iterations: 1000
+The measured average process context switch time: 0.074309ms
+The measured process context switch time standard deviation: 0.221582ms
