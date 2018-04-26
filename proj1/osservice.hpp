@@ -34,6 +34,8 @@ class OsService{
     OsService();
     void testThreadContextSwitchTime(uint64_t iter, double &dv, double &res);
     void testProcContextSwitchTime(uint64_t iter, double &dv, double &res);
+    void testThreadCreation(uint64_t iter, double &dv, double &res);
+    void testProcessCreation(uint64_t iter, double &dv, double &res);
 };
 
 #endif

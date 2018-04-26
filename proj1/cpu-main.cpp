@@ -29,10 +29,6 @@ int main(){
 
 
 
-
-
-  test.testProcContextSwitchTime(ITERATION, proc_ctx_stdv, proc_ctx_res);
-
   // read and loop overhead test
   overHeadTest.testReadOverhead(ITERATION, read_op_stdv, read_op_res);
   overHeadTest.testLoopOverhead(ITERATION, loop_op_std, loop_op_res);
@@ -47,6 +43,26 @@ int main(){
   overHeadTest.testProcedureCallOverhead6(ITERATION, func_call_std[6], func_call_res[6]);
   overHeadTest.testProcedureCallOverhead7(ITERATION, func_call_std[7], func_call_res[7]);
 
+  test.testThreadCreation(ITERATION, proc_ctx_stdv, proc_ctx_res);
+  std::cout << DELIMITER << "\n";
+  std::cout << "Thread Creation Time Measurement" <<"\n";
+  std::cout << DELIMITER << "\n";
+
+  std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
+  std::cout << "The measured average thread creation time: " + std::to_string(proc_ctx_res) + "ms" << '\n';
+  std::cout << "The measured thread creation time standard deviation: " + std::to_string(proc_ctx_stdv) + "ms" << '\n';
+
+
+  test.testProcessCreation(ITERATION, proc_ctx_stdv, proc_ctx_res);
+  std::cout << DELIMITER << "\n";
+  std::cout << "Process Creation Time Measurement" <<"\n";
+  std::cout << DELIMITER << "\n";
+
+  std::cout << "Iterations: " + std::to_string(ITERATION) << '\n';
+  std::cout << "The measured average Process creation time: " + std::to_string(proc_ctx_res) + "ms" << '\n';
+  std::cout << "The measured thread Process time standard deviation: " + std::to_string(proc_ctx_stdv) + "ms" << '\n';
+
+  test.testProcContextSwitchTime(ITERATION, proc_ctx_stdv, proc_ctx_res);
 
   std::cout << DELIMITER << "\n";
   std::cout << "Process Context Switch Time Measurement" <<"\n";

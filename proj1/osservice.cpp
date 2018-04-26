@@ -91,6 +91,10 @@ double OsService::stddev(std::vector<double> input, double avg){
 * Public Members Implementation:
 *****************************************************/
 
+void* test(void *end){	
+	pthread_exit(NULL);	
+}
+
 void *testThreads(void *end){
   uint32_t high;
   uint32_t low;
@@ -105,6 +109,71 @@ void *testThreads(void *end){
   *res = (((uint64_t)high << 32) | low );
   pthread_exit(NULL);
 }
+
+void OsService::testThreadCreation(uint64_t iter, double &dv, double &res){
+  pthread_t td;
+  uint64_t start, end;
+  uint64_t total_cycles = 0;
+  std::vector<double> times;
+  uint64_t count = 0;
+  
+  for (int i = 0; i < iter; i++) {
+    start = OsService::getCPUCycles();
+    //pthread_create(&td, NULL, &test,&end);
+    pthread_create(&td, NULL, &testThreads, &end);
+    end = OsService::getCPUCycles();
+    pthread_join(td, NULL);
+    total_cycles += end - start;
+    double cur = end - start;
+    times.push_back(( (double)cur / (double)_cycles_per_ms));
+    count++;
+  }
+  res = (double)(total_cycles / count) / (double)_cycles_per_ms;
+  dv = OsService::stddev(times , res);
+  return;
+}
+
+void OsService::testProcessCreation(uint64_t iter, double &dv, double &res){
+   pid_t pid;
+  uint64_t end = 0; // used as buffer
+  uint64_t start = 0;
+  uint64_t total_cycles = 0;
+  std::vector<double> times;
+  uint64_t count = 0;
+  
+  for(uint64_t i = 0; i < iter; i++){
+    start = OsService::getCPUCycles();
+    pid = fork();
+
+    switch(pid){
+      case -1:
+      // fork fail
+      std::cout << "fork process failed" << "\n";
+      exit(1);
+      break;
+
+      case 0:
+      //child process
+      exit(1);
+      break;
+
+      default:
+      // parent process
+      end = OsService::getCPUCycles();
+      total_cycles += end - start;
+      double cur = end - start;
+      times.push_back(( (double)cur / (double)_cycles_per_ms));
+      count++;
+      wait(NULL); // wait for child process to finish
+    }
+  }
+  res = (double)(total_cycles / count) / (double)_cycles_per_ms;
+  dv = OsService::stddev(times , res);
+  return;
+}
+
+
+
 
 void OsService::testThreadContextSwitchTime(uint64_t iter, double &dv, double &res){
   pthread_t tid;
@@ -152,7 +221,9 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
   uint64_t count = 0; //count of valid measure
 
   for(uint64_t i = 0; i < iter; i++){
+    
     pid = fork();
+
     switch(pid){
       case -1:
       // fork fail
