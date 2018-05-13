@@ -10,15 +10,13 @@ osservice.cpp:
 implementation of testing procedures: context switching time measurement
 *******************************************************************************************/
 
-#include "osservice.hpp"
-#include <iostream>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include "mmTest.hpp"
 #include <unistd.h>
-#include <pthread.h>
-#include <stdlib.h>
-#include <cstdint>
-#include <vector>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/mann.h>
 #include <math.h>
 
 /*****************************************************
@@ -64,10 +62,39 @@ double MMTest::getAvg(){
 }
 
 void MMTest::testPageFault(uint64_t iter){
+  uint64_t PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
+  std::cerr << "Page size is: " << PAGE_SIZE << std::endl;
+  const uint64_t TEST_LENGTH = 1000;
+
+  int fd = 0;
+  char* data;
+  uint64_t start = 0;
+  uint64_t end = 0;
+  double p_time = 0.0;
   // test if test has been reset, otherwise reset it
   if(!isTestReset()){
     resetMMTest();
   }
 
+  fd = open("./pageFaultTestFile", O_CREATE | O_RDWR, S_IRUSR | S_IWUSR);
+  if(fd < 0){
+    std::cerr << errno << std::endl;
+    exit(1);
+  }
 
+  data = static_cast<char *>(mmap(NULL, TEST_LENGTH * PAGE_SIZE,
+                              PROT_WRITE | PROT_READ,
+                              MAP_SHARED, fd, 0));
+  this->timer.warmUp();
+
+  for(unsigned i = 0; i < TEST_LENGTH; ++i){
+    start = this->timer.getCpuCycle();
+    data[i * PAGE_SIZE] = 'm';
+    end = this->timer.getCpuCycle();
+    p_time = this->cycleToMsSec(end - start);
+  }
+  if(munmap(data, TEST_LENGTH * PAGE_SIZE) < 0){
+    std::cerr << errno << std::endl;
+  }
+  close(fd);
 }

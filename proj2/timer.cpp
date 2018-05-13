@@ -38,6 +38,6 @@ Timer::Timer(){
   _cycles_per_ms = (end - start) / SLEEP_TIME_SEC / SEC_TO_MSEC;
 }
 
-double Timer::cycleToSec(uint64_t cpu_cycle) {
+double Timer::cycleToMsSec(uint64_t cpu_cycle) {
 	return (double)(cpu_cycle) / (double)_cycles_per_ms;
 }

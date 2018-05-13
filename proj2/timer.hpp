@@ -27,7 +27,7 @@ class Timer {
 
 	public:
 		Timer();
-		double cycleToSec(uint64_t cpu_cycle);
+		double cycleToMsSec(uint64_t cpu_cycle);
 
 		/**
 			return: current cpu time in cpu cycles.
