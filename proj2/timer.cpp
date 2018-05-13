@@ -38,25 +38,6 @@ Timer::Timer(){
   _cycles_per_ms = (end - start) / SLEEP_TIME_SEC / SEC_TO_MSEC;
 }
 
-
-
-
-double Timer::stddv (std::vector<double> input, double avg) {
-	double sd = 0.0;
-	for(double i : input){
-		sd += pow(i - avg, 2.0);
-	}
-	sd /= static_cast<double>(input.size());
-	sd = pow(sd, 0.5);
-	return sd;
-}
-
 double Timer::cycleToSec(uint64_t cpu_cycle) {
 	return (double)(cpu_cycle) / (double)_cycles_per_ms;
 }
-
-
-
-
-
-
