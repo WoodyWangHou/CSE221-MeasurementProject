@@ -1,12 +1,12 @@
 CC=g++
-CFLAGS=-ggdb -std=c++11 -Wall -pedantic -pthread
+CFLAGS=-ggdb -std=c++11 -Wall -pedantic
 
-H_FILES=osservice.hpp overheads.hpp timer.hpp 
-FILES=osservice.cpp overheads.cpp timer.cpp cpu-main.cpp
+H_FILES=mmTest.hpp timer.hpp
+FILES=mm-main.cpp mmTest.cpp timer.cpp
 
-all: cpu_test
+all: mm_test
 
-cpu_test: $(FILES) $(H_FILES)
-	$(CC) $(CFLAGS) -o cpu_test $(FILES)
+mm_test: $(FILES) $(H_FILES)
+	$(CC) $(CFLAGS) -o mm_test $(FILES)
 
-clean: rm -rf cpu_test
+clean: rm -rf mm_test

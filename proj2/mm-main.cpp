@@ -11,20 +11,25 @@ main testing procedures
 *******************************************************************************************/
 
 #include <iostream>
-#include "osservice.hpp"
-#include "overheads.hpp"
+#include <unistd.h>
+#include "mmTest.hpp"
 
 const std::string DELIMITER = "*******************************";
-const uint64_t ITERATION = 1000;
 
 int main(){
   // declare common output format
   MMTest mem_test;
+  const uint64_t ITERATION = 1000;
+  const uint64_t PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
+
   std::cout << DELIMITER << "\n";
   std::cout << "Page Fault Measurement" <<"\n";
   std::cout << DELIMITER << "\n";
 
-  mem_test
+  mem_test.testPageFault(ITERATION);
+  std::cout << "Average Page Fault time: " << mem_test.getAvg() << " ms" << std::endl;
+  std::cout << "Standard Deviation of page fault time: " << mem_test.getStddev() << std::endl;
+  std::cout << "Average byte access time via page: " << mem_test.getAvg() / (double) PAGE_SIZE << " ms" << std::endl;
 
   return 0;
 }

@@ -16,7 +16,7 @@ implementation of testing procedures: context switching time measurement
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/mann.h>
+#include <sys/mman.h>
 #include <math.h>
 
 /*****************************************************
@@ -25,7 +25,7 @@ implementation of testing procedures: context switching time measurement
 
 /*****************************************************
 * Private Members Implementation:
-*****************************************************
+*****************************************************/
 
 
 /*****************************************************
@@ -62,10 +62,7 @@ double MMTest::getAvg(){
 }
 
 void MMTest::testPageFault(uint64_t iter){
-  uint64_t PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
-  std::cerr << "Page size is: " << PAGE_SIZE << std::endl;
-  const uint64_t TEST_LENGTH = 1000;
-
+  const uint64_t PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
   int fd = 0;
   char* data;
   uint64_t start = 0;
@@ -76,24 +73,36 @@ void MMTest::testPageFault(uint64_t iter){
     resetMMTest();
   }
 
-  fd = open("./pageFaultTestFile", O_CREATE | O_RDWR, S_IRUSR | S_IWUSR);
+  fd = open("./pageFaultTestFile", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
   if(fd < 0){
     std::cerr << errno << std::endl;
     exit(1);
   }
 
-  data = static_cast<char *>(mmap(NULL, TEST_LENGTH * PAGE_SIZE,
+  if(posix_fallocate(fd, 0, iter * PAGE_SIZE) < 0){
+    std::cerr << errno << std::endl;
+    exit(1);
+  }
+
+  data = static_cast<char *>(mmap(NULL, iter * PAGE_SIZE,
                               PROT_WRITE | PROT_READ,
                               MAP_SHARED, fd, 0));
-  this->timer.warmUp();
 
-  for(unsigned i = 0; i < TEST_LENGTH; ++i){
+  if(data == MAP_FAILED){
+    std::cerr << errno << std::endl;
+    exit(1);
+  }
+  // std::cerr << data << std::endl;
+  this->timer.warmUp();
+  for(unsigned i = 0; i < iter; ++i){
     start = this->timer.getCpuCycle();
     data[i * PAGE_SIZE] = 'm';
     end = this->timer.getCpuCycle();
-    p_time = this->cycleToMsSec(end - start);
+    p_time = this->timer.cycleToMsSec(end - start);
+    this->res.push_back(p_time);
   }
-  if(munmap(data, TEST_LENGTH * PAGE_SIZE) < 0){
+
+  if(munmap(data, iter * PAGE_SIZE) < 0){
     std::cerr << errno << std::endl;
   }
   close(fd);
