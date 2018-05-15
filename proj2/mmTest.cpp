@@ -73,7 +73,7 @@ void MMTest::testPageFault(uint64_t iter){
     resetMMTest();
   }
 
-  fd = open("./pageFaultTestFile", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+  fd = open("./pageFaultTestFile", O_CREAT | O_RDWR | O_DIRECT, S_IRUSR | S_IWUSR);
   if(fd < 0){
     std::cerr << errno << std::endl;
     exit(1);
