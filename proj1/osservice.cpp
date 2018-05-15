@@ -107,6 +107,7 @@ void *testThreads(void *end){
       :: "%eax", "%ebx", "%ecx", "%edx");
   uint64_t *res = (uint64_t *)end;
   *res = (((uint64_t)high << 32) | low );
+
   pthread_exit(NULL);
 }
 
@@ -129,6 +130,8 @@ void OsService::testThreadCreation(uint64_t iter, double &dv, double &res){
     count++;
   }
   res = (double)(total_cycles / count) / (double)_cycles_per_ms;
+  std::cout << "Thread Creation       " << std::endl;
+  std::cout << std::to_string(total_cycles / count) << std::endl;
   dv = OsService::stddev(times , res);
   return;
 }
@@ -183,25 +186,49 @@ void OsService::testThreadContextSwitchTime(uint64_t iter, double &dv, double &r
   uint64_t total_cycles = 0;
   uint64_t count = 0;
 
-  for(uint64_t i = 0; i < iter; i++){
-    start = OsService::getCPUCycles();
+  // for(uint64_t i = 0; i < iter; i++){
+  //   start = OsService::getCPUCycles();
+  //   if(pthread_create(&tid, NULL, &testThreads, &end) != 0){
+  //     std::cout << "threads create failed" << "\n";
+  //     exit(EXIT_FAILURE);
+  //   }else{
+  //     sched_yield();
+  //   }
+
+  //   pthread_join(tid, NULL);
+
+  //   if(end > start){
+  //     uint64_t cur = end - start;
+  //     times.push_back(((double)cur / (double)_cycles_per_ms)); //accumulate cycles
+  //     total_cycles += cur;
+  //     count++;
+  //   }
+  // }
+
+
+    for(uint64_t i = 0; i < iter; i++){
+
     if(pthread_create(&tid, NULL, &testThreads, &end) != 0){
       std::cout << "threads create failed" << "\n";
       exit(EXIT_FAILURE);
     }else{
-      sched_yield();
+      start = OsService::getCPUCycles();
     }
     pthread_join(tid, NULL);
 
+    uint64_t cur = 0;
     if(end > start){
-      uint64_t cur = end - start;
-      times.push_back(((double)cur / (double)_cycles_per_ms) / 2.0); //accumulate cycles
+       cur = end - start;
+    } else {
+    	cur = start - end;
+    }
+
+    times.push_back(((double)cur / (double)_cycles_per_ms)); //accumulate cycles
       total_cycles += cur;
       count++;
-    }
   }
 
-  res = ((double)(total_cycles / count) / (double)_cycles_per_ms) / 2.0; // res in ms
+  res = ((double)(total_cycles / count) / (double)_cycles_per_ms); // res in ms
   dv = OsService::stddev(times , res);
   return;
 }
@@ -248,7 +275,7 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
 
     if(end > start){
       uint64_t cur = end - start;
-      times.push_back(((double)cur / (double)_cycles_per_ms) / 2.0); //accumulate cycles
+      times.push_back(((double)cur / (double)_cycles_per_ms)); //accumulate cycles
       total_cycles += cur;
       count++;
     }
@@ -257,7 +284,7 @@ void OsService::testProcContextSwitchTime(uint64_t iter, double &dv, double &res
   close(pipes[0]);
   close(pipes[1]);
 
-  res = ((double)(total_cycles / count) / (double)_cycles_per_ms) / 2.0; // res in ms
+  res = ((double)(total_cycles / count) / (double)_cycles_per_ms); // res in ms
   dv = OsService::stddev(times , res);
   return;
 }
