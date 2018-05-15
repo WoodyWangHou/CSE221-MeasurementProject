@@ -107,3 +107,71 @@ void MMTest::testPageFault(uint64_t iter){
   }
   close(fd);
 }
+
+
+
+/*************************************************************
+* Test memory read and write bandwidth Implementation:
+**************************************************************/
+struct Node {
+	int a[K];  
+};
+
+
+void MMTest::testReadBandwidth(uint64_t iter) {
+	uint64_t start = 0;
+  	uint64_t end = 0;
+  	double p_time = 0.0;
+
+  	this->timer.warmUp();
+  	this->res.clear();
+  	Node n;
+  	Node nodes[SZ];
+  	std::cout << "stride size is: " << sizeof(struct Node) << " bytes" << std::endl;
+  	for (int j = 0; j < iter; j++) {
+  		start = this->timer.getCpuCycle();
+	  	for(int i = 0; i < SZ; i+=5){
+	  		// 5 unrolling
+		    n = nodes[i];
+		    n = nodes[i + 1];
+		    n = nodes[i + 2];
+		    n = nodes[i + 3];
+		    n = nodes[i + 4];
+		}
+		end = this->timer.getCpuCycle();
+		p_time = this->timer.cycleToMsSec(end - start);
+		this->res.push_back((sizeof(struct Node) * SZ * 1.0)/p_time);
+  	}
+}
+
+
+void MMTest::testWriteBandwidth(uint64_t iter) {
+	uint64_t start = 0;
+  	uint64_t end = 0;
+  	double p_time = 0.0;
+
+  	this->timer.warmUp();
+  	this->res.clear();
+  	Node n;
+  	Node nodes[SZ];
+  	std::cout << "stride size is: " << sizeof(struct Node) << " bytes" << std::endl;
+
+  	for (int j = 0; j < iter; j++) {
+  		start = this->timer.getCpuCycle();
+	  	for(int i = 0; i < SZ; i+=5){
+	  		// 5 unrolling
+		    nodes[i] = {1,1,1,1,1,1,1,1,1,1};
+		    nodes[i + 1] = {1,1,1,1,1,1,1,1,1,1};
+		    nodes[i + 2] = {1,1,1,1,1,1,1,1,1,1};
+		    nodes[i + 3] = {1,1,1,1,1,1,1,1,1,1};
+		    nodes[i + 4] = {1,1,1,1,1,1,1,1,1,1};
+		}
+		end = this->timer.getCpuCycle();
+		p_time = this->timer.cycleToMsSec(end - start);
+		this->res.push_back((sizeof(struct Node) * SZ * 1.0)/p_time);
+  	}
+}
+
+
+
+

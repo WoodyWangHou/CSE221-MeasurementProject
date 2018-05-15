@@ -33,5 +33,16 @@ int main(){
   std::cout << "Standard Deviation of page fault time: " << mem_test.getStddev() << std::endl;
   std::cout << "Average byte access time via page: " << mem_test.getAvg() / (double) PAGE_SIZE << " ms" << std::endl;
 
+
+  mem_test.testWriteBandwidth(ITER);
+  std::cout << "Average Write Bandwidth: " << mem_test.getAvg() << " bytes/s" << std::endl;
+  std::cout << "Standard Deviation of Write Bandwidth: " << mem_test.getStddev() << std::endl;
+ 
+
+
+  mem_test.testReadBandwidth(ITER);
+  std::cout << "Average Read Bandwidth: " << mem_test.getAvg() << " ms" << std::endl;
+  std::cout << "Standard Deviation of Read Bandwidth: " << mem_test.getStddev() << std::endl;
+  
   return 0;
 }

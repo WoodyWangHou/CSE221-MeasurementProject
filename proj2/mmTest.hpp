@@ -4,7 +4,9 @@
 #include <cstdint>
 #include <vector>
 #include "timer.hpp"
-
+#define K 10
+#define SZ 1000000
+#define ITER 10000
 class MMTest{
   private:
     /*
@@ -51,6 +53,14 @@ class MMTest{
       Page fault test
     */
     void testPageFault(uint64_t iter);
+
+    /*
+		memory read bandwidth test
+    */
+    void testReadBandwidth(uint64_t iter);
+    void testWriteBandwidth(uint64_t iter);
+
+
 };
 
 #endif
