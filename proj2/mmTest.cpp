@@ -94,7 +94,7 @@ void MMTest::testPageFault(uint64_t iter){
   }
   // std::cerr << data << std::endl;
   this->timer.warmUp();
-  for(unsigned i = 0; i < iter; ++i){
+  for(unsigned i = 0; i < iter; i+=10){
     start = this->timer.getCpuCycle();
     data[i * PAGE_SIZE] = 'm';
     end = this->timer.getCpuCycle();
