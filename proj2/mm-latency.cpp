@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include "mm-latency.hpp"
 using namespace std;
 
 using namespace std::chrono;
@@ -20,7 +22,7 @@ double getTimeDif(const high_resolution_clock::time_point & t1, const high_resol
    return time_span.count();
 }
 
-void memlatency(){
+void Latency::memlatency(){
   int size = 1;
       srand(time(NULL));
       long stride = (1<<10) - 1;
