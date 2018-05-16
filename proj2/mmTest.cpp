@@ -85,12 +85,15 @@ void MMTest::testPageFault(uint64_t iter){
     // }
 
   // Need to test: if the following work in Mac OS
-  store *args = new fstore();
-  args->fst_flags = F_ALLOCATECONTIG;
-  args->fst_offset = 0;
-  args->fst_length = iter * PAGE_SIZE;
 
-  if(fcntl(fd, F_PREALLOCATE, args) < 0){
+  fstore args;
+  args.fst_flags = F_ALLOCATECONTIG;
+  args.fst_offset = 0;
+  args.fst_length = iter * PAGE_SIZE;
+  args.fst_posmode = F_PEOFPOSMODE;
+
+  if(fcntl(fd, F_PREALLOCATE, &args) < 0){
+      std::cerr << "pre allocate fail" << std::endl;
       std::cerr << errno << std::endl;
       exit(1);
   }
@@ -100,24 +103,25 @@ void MMTest::testPageFault(uint64_t iter){
                                 MAP_SHARED, fd, 0));
 
     if(data == MAP_FAILED){
+        std::cerr << "map fail" << std::endl;
         std::cerr << errno << std::endl;
         exit(1);
     }
-    // std::cerr << data << std::endl;
+
     this->timer.warmUp();
-    for(unsigned i = 0; i < iter; i+=10){
+    std::cerr << "data1" << std::endl;
+    for(unsigned i = 0; i < iter; ++i){
+        std::cerr << i << std::endl;
         start = this->timer.getCpuCycle();
         data[i * PAGE_SIZE] = 'm';
         end = this->timer.getCpuCycle();
         p_time = this->timer.cycleToMsSec(end - start);
         this->res.push_back(p_time);
     }
-
     if(munmap(data, iter * PAGE_SIZE) < 0){
         std::cerr << errno << std::endl;
     }
 
-    delete args;
     close(fd);
 }
 
