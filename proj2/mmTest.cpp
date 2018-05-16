@@ -113,7 +113,6 @@ void MMTest::testPageFault(uint64_t iter){
 
 
 void MMTest::testReadBandwidth(uint64_t iter) {
-	std::cout << "fuck!!!!!" << std::endl;
 	uint64_t start = 0;
   	uint64_t end = 0;
   	double p_time = 0.0;
