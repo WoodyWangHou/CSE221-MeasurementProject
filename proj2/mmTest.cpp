@@ -79,27 +79,9 @@ void MMTest::testPageFault(uint64_t iter){
         exit(1);
     }
 
-    // if(posix_fallocate(fd, 0, iter * PAGE_SIZE) < 0){
-    //     std::cerr << errno << std::endl;
-    //     exit(1);
-    // }
-
-  // Need to test: if the following work in Mac OS
-
-  fstore args;
-  args.fst_flags = F_ALLOCATECONTIG;
-  args.fst_offset = 0;
-  args.fst_length = iter * PAGE_SIZE;
-  args.fst_posmode = F_PEOFPOSMODE;
-
-  if(fcntl(fd, F_PREALLOCATE, &args) < 0){
-      std::cerr << "pre allocate fail" << std::endl;
-      std::cerr << errno << std::endl;
-      exit(1);
-  }
-
+    ftruncate(fd, iter * PAGE_SIZE);
     data = static_cast<char *>(mmap(NULL, iter * PAGE_SIZE,
-                                PROT_WRITE | PROT_READ,
+                                PROT_WRITE | PROT_READ | PROT_EXEC,
                                 MAP_SHARED, fd, 0));
 
     if(data == MAP_FAILED){
@@ -109,9 +91,7 @@ void MMTest::testPageFault(uint64_t iter){
     }
 
     this->timer.warmUp();
-
-    for(unsigned i = 0; i < iter; ++i){
-        std::cerr << i << std::endl;
+    for(unsigned i = 0; i < iter; i += 10){
         start = this->timer.getCpuCycle();
         data[i * PAGE_SIZE] = 'm';
         end = this->timer.getCpuCycle();
