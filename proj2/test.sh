@@ -1,6 +1,6 @@
 #!/bin/bash
 make clean
 make
-rm project1_result.txt
+rm pageFaultTestFile
 
-./cpu_test 2 >> ./project1_result.txt
+./mm_test
