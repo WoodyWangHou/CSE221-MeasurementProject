@@ -5,8 +5,18 @@
 #include <vector>
 #include "timer.hpp"
 #define K 10
-#define SZ 1000000
+#define SZ 10000
 #define ITER 10000
+
+struct Node {
+	int a[K];
+	Node() {
+		for(int i = 0; i < K; i++) {
+			a[i] = 0;
+		}
+	}  
+};
+
 class MMTest{
   private:
     /*
@@ -33,7 +43,11 @@ class MMTest{
       res.clear();
       timer = Timer();
     };
-
+    void writeToMem(Node &n) {
+    	for (int i = 0; i < K; i++) {
+    		n.a[i] = 1;
+    	}
+    }
   public:
     /**
       Paras: 1). input value in a vector. Please ensure the element has been converted to time already

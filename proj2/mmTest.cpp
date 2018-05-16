@@ -130,12 +130,10 @@ void MMTest::testPageFault(uint64_t iter){
 /*************************************************************
 * Test memory read and write bandwidth Implementation:
 **************************************************************/
-struct Node {
-	int a[K];
-};
 
 
 void MMTest::testReadBandwidth(uint64_t iter) {
+	std::cout << "fuck!!!!!" << std::endl;
 	uint64_t start = 0;
   	uint64_t end = 0;
   	double p_time = 0.0;
@@ -177,11 +175,8 @@ void MMTest::testWriteBandwidth(uint64_t iter) {
   		start = this->timer.getCpuCycle();
 	  	for(int i = 0; i < SZ; i+=5){
 	  		// 5 unrolling
-		    nodes[i] = {1,1,1,1,1,1,1,1,1,1};
-		    nodes[i + 1] = {1,1,1,1,1,1,1,1,1,1};
-		    nodes[i + 2] = {1,1,1,1,1,1,1,1,1,1};
-		    nodes[i + 3] = {1,1,1,1,1,1,1,1,1,1};
-		    nodes[i + 4] = {1,1,1,1,1,1,1,1,1,1};
+		    this->writeToMem(nodes[i]);
+
 		}
 		end = this->timer.getCpuCycle();
 		p_time = this->timer.cycleToMsSec(end - start);
