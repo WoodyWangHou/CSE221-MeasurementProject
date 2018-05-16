@@ -91,7 +91,7 @@ void MMTest::testPageFault(uint64_t iter){
     }
 
     this->timer.warmUp();
-    for(unsigned i = 0; i < iter; i += 10){
+    for(unsigned i = 0; i < iter; ++i){
         start = this->timer.getCpuCycle();
         data[i * PAGE_SIZE] = 'm';
         end = this->timer.getCpuCycle();

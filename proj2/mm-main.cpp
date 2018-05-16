@@ -21,7 +21,7 @@ int main(){
   MMTest mem_test;
   const uint64_t ITERATION = 5000;
   // make sure file is larger than memory
-  const uint64_t NUM_PAGES = 3000000;
+  const uint64_t NUM_PAGES = 300000;
   const uint64_t PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
 
   std::cout << DELIMITER << "\n";
