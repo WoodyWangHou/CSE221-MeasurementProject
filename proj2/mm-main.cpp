@@ -18,7 +18,7 @@ main testing procedures
 const std::string DELIMITER = "*******************************";
 
 int main(){
-  declare common output format
+  
   MMTest mem_test;
   const uint64_t ITERATION = 5000;
   // make sure file is larger than memory
@@ -53,6 +53,10 @@ int main(){
   std::cout << "Average Write Bandwidth: " << mem_test.getAvg() << " bytes/s" << std::endl;
   std::cout << "Standard Deviation of Write Bandwidth: " << mem_test.getStddev() << std::endl;
 
+
+  std::cout << DELIMITER << "\n";
+  std::cout << "Latency Measurement" <<"\n";
+  std::cout << DELIMITER << "\n";
   Latency lt;
   lt.memlatency();
 
