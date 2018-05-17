@@ -5,7 +5,7 @@
 #include <vector>
 #include "timer.hpp"
 #define K 10
-#define SZ 10000
+#define SZ 1000000
 #define ITER 10000
 
 struct Node {
