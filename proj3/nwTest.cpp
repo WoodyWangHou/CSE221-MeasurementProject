@@ -94,6 +94,10 @@ void bindSocket(int servSock){
     return servSock;
 }
 
+void HandleTCPClient(){
+    // TODO: to be implemented
+}
+
 void setUpSocket(int servPort, int mode){
     int servSock = createSocket(servPort);
 
@@ -125,6 +129,7 @@ void setUpSocket(int servPort, int mode){
       break;
       case SEND:
         // set up socket as client
+        // TODO: to be implemented
       break;
     }
 }
@@ -140,5 +145,6 @@ void NWTest::peakBandwidthTest(uint64_t iter, std::string args){
       setUpIdleTCPServer(BW_TEST_PORT);
     }else{
       // client
+      // TODO: to be implemented
     }
 }
