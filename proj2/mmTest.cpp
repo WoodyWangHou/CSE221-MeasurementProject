@@ -119,22 +119,72 @@ void MMTest::testReadBandwidth(uint64_t iter) {
 
   	this->timer.warmUp();
   	this->res.clear();
-  	Node n;
-  	Node nodes[SZ];
-  	std::cout << "stride size is: " << sizeof(struct Node) << " bytes" << std::endl;
-  	for (int j = 0; j < iter; j++) {
+  	
+  	
+  	std::cout << "stride size is: " << sizeof(int) << " bytes" << std::endl;
+  	long array[SZ];
+  	long n;
+  	for (int i = 0; i < SZ; i++) {
+  		array[i] = 0;
+  	}
+  	for (int j = 0; j < 1000; j++) {
   		start = this->timer.getCpuCycle();
-	  	for(int i = 0; i < SZ; i+=5){
+	  	for(int i = 0; i < SZ; i+=50){
 	  		// 5 unrolling
-		    n = nodes[i];
-		    n = nodes[i + 1];
-		    n = nodes[i + 2];
-		    n = nodes[i + 3];
-		    n = nodes[i + 4];
+		    n = array[i];
+		    n = array[i + 1];
+		    n = array[i + 2];
+		    n = array[i + 3];
+		    n = array[i + 4];
+		    n = array[i + 5];
+		    n = array[i + 6];
+		    n = array[i + 7];
+		    n = array[i + 8];
+		    n = array[i + 9];
+		    n = array[i + 10];
+		    n = array[i + 11];
+		    n = array[i + 12];
+		    n = array[i + 13];
+		    n = array[i + 14];
+		    n = array[i + 15];
+		    n = array[i + 16];
+		    n = array[i + 17];
+		    n = array[i + 18];
+		    n = array[i + 19];
+		    n = array[i + 20];
+		    n = array[i + 21];
+		    n = array[i + 22];
+		    n = array[i + 23];
+		    n = array[i + 24];
+		    n = array[i + 25];
+		    n = array[i + 26];
+		    n = array[i + 27];
+		    n = array[i + 28];
+		    n = array[i + 29];
+		    n = array[i + 30];
+		    n = array[i + 31];
+		    n = array[i + 32];
+		    n = array[i + 33];
+		    n = array[i + 34];
+		    n = array[i + 35];
+		    n = array[i + 36];
+		    n = array[i + 37];
+		    n = array[i + 38];
+		    n = array[i + 39];
+		    n = array[i + 40];
+		    n = array[i + 41];
+		    n = array[i + 42];
+		    n = array[i + 43];
+		    n = array[i + 44];
+		    n = array[i + 45];
+		    n = array[i + 46];
+		    n = array[i + 47];
+		    n = array[i + 48];
+		    n = array[i + 49];
 		}
 		end = this->timer.getCpuCycle();
 		p_time = this->timer.cycleToMsSec(end - start);
-		this->res.push_back((sizeof(struct Node) * SZ * 1.0)/p_time);
+		this->res.push_back((sizeof(long) * SZ * 1.0/1000000)/p_time);
   	}
 }
 
@@ -146,19 +196,70 @@ void MMTest::testWriteBandwidth(uint64_t iter) {
 
   	this->timer.warmUp();
   	this->res.clear();
-  	Node n;
-  	Node nodes[SZ];
-  	std::cout << "stride size is: " << sizeof(struct Node) << " bytes" << std::endl;
+  	
+  	long carray[SZ] __attribute__((aligned (64)));
+  	//int n;
+  	memset(carray, 0, SZ * sizeof(long));
 
-  	for (int j = 0; j < iter; j++) {
+  	std::cout << "stride size is: " << sizeof(long) << " bytes" << std::endl;
+
+  	for (int j = 0; j < 1000; j++) {
   		start = this->timer.getCpuCycle();
-	  	for(int i = 0; i < SZ; i+=5){
+	  	for(int i = 0; i < SZ; i+=50){
 	  		// 5 unrolling
-		    this->writeToMem(nodes[i]);
-
+		    carray[i] = 1;
+		    carray[i + 1] = 1;
+		    carray[i + 2] = 1;
+		    carray[i + 3] = 1;
+		    carray[i + 4] = 1;
+		    carray[i + 5] = 1;
+		    carray[i + 6] = 1;
+		    carray[i + 7] = 1;
+		    carray[i + 8] = 1;
+		    carray[i + 9] = 1;
+		    carray[i + 10] = 1;
+		    carray[i + 11] = 1;
+		    carray[i + 12] = 1;
+		    carray[i + 13] = 1;
+		    carray[i + 14] = 1;
+		    carray[i + 15] = 1;
+		    carray[i + 16] = 1;
+		    carray[i + 17] = 1;
+		    carray[i + 18] = 1;
+		    carray[i + 19] = 1;
+		    carray[i + 20] = 1;
+		    carray[i + 21] = 1;
+		    carray[i + 22] = 1;
+		    carray[i + 23] = 1;
+		    carray[i + 24] = 1;
+		    carray[i + 25] = 1;
+		    carray[i + 26] = 1;
+		    carray[i + 27] = 1;
+		    carray[i + 28] = 1;
+		    carray[i + 29] = 1;
+		    carray[i + 30] = 1;
+		    carray[i + 31] = 1;
+		    carray[i + 32] = 1;
+		    carray[i + 33] = 1;
+		    carray[i + 34] = 1;
+		    carray[i + 35] = 1;
+		    carray[i + 36] = 1;
+		    carray[i + 37] = 1;
+		    carray[i + 38] = 1;
+		    carray[i + 39] = 1;
+		    carray[i + 40] = 1;
+		    carray[i + 41] = 1;
+		    carray[i + 42] = 1;
+		    carray[i + 43] = 1;
+		    carray[i + 44] = 1;
+		    carray[i + 45] = 1;
+		    carray[i + 46] = 1;
+		    carray[i + 47] = 1;
+		    carray[i + 48] = 1;
+		    carray[i + 49] = 1;
 		}
 		end = this->timer.getCpuCycle();
 		p_time = this->timer.cycleToMsSec(end - start);
-		this->res.push_back((sizeof(struct Node) * SZ * 1.0)/p_time);
+		this->res.push_back((sizeof(long) * SZ * 1.0/1000000)/p_time);
   	}
 }
