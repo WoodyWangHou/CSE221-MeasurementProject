@@ -45,15 +45,22 @@ int main(int argc, char* arg[]){
     exit(1);
   }
 
-  logHeader("Peak Bandwidth Measurement: Remote");
+  logHeader("Peak Bandwidth Measurement: Remote (AWS)");
 
-  // test.peakNetworkBandWidthTestRemote(ITERATION);
-  // std::string msg = "Measured Peak BandWidth Remote Throughput: " + std::to_string(test.getAvg()) + " byte/msec";
-  // log(msg);
-
-  test.peakNetworkBandWidthTestLocal(ITERATION);
+  test.peakNetworkBandWidthTestRemote(ITERATION);
   double MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   double stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
+  msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
+  log(msg);
+
+  msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
+  log(msg);
+
+  logHeader("Peak Bandwidth Measurement: Localhost");
+
+  test.peakNetworkBandWidthTestLocal(ITERATION);
+  MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
+  stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
   log(msg);
 

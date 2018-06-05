@@ -6,14 +6,14 @@
 #include <cstring>
 #include "timer.hpp"
 
-const unsigned short BW_TEST_PORT = 20002;
+const unsigned short BW_TEST_PORT = 8429;
 
 const uint8_t LISTEN = 1;
 const uint8_t SEND_LOCAL = 2;
 const uint8_t SEND_REMOTE = 3;
 
 const uint64_t MAXPENDING = 5;
-const std::string REMOTEIP = ""; // to be filled in
+const std::string REMOTEIP = "52.25.77.52"; // to be filled in, aws(may change)
 const std::string LOCALIP = "127.0.0.1";
 const uint64_t BUFSIZE = 1024 * 1024; // 1Mb, based on Imbench
 const uint64_t TOTALSIZE = 50; // 50 mb
