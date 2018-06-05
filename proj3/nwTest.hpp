@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <cstring>
+#include <ctime>
 #include "timer.hpp"
 
 const unsigned short BW_TEST_PORT = 8429;
@@ -46,6 +47,15 @@ class NWTest{
 			  std::cerr << message << std::endl;
 			  exit(1);
 		}
+
+    /*
+    * logger
+    */
+
+    void log(std::string msg){
+      std::cerr << msg << std::endl;
+      return;
+    }
 
 		/*
 		*	socket setup helpers

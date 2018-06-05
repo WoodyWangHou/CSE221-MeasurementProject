@@ -61,7 +61,7 @@ void NWTest::HandleTCPClient(int clntSock){
     // TODO: to be implemented
     char buffer[BUFSIZE];
     ssize_t numBytesRcvd;
-    std::cerr << "Server Received bytes" << std::endl;
+    std::cerr << "Start Receiving packets" << std::endl;
 
     do{
       numBytesRcvd = recv(clntSock, buffer, BUFSIZE, MSG_WAITALL);
@@ -69,7 +69,7 @@ void NWTest::HandleTCPClient(int clntSock){
         DieWithMessage("recv() failed");
       }
     }while(numBytesRcvd > 0);
-
+    log("Connection Closed");
     return;
 }
 
@@ -88,7 +88,7 @@ void NWTest::connectSocket(int clntSock, std::string ip, unsigned short servPort
     if(connect(clntSock, servAddr_t, sizeof(*servAddr_t)) < 0){
         DieWithMessage("connect() failed");
     }
-
+    log("Connected");
     return;
 }
 
@@ -139,6 +139,7 @@ int NWTest::setUpSocket(unsigned short servPort, int mode){
           if(close(clntSock) < 0){
             DieWithMessage("close() failed");
           }
+
         }
       break;
 

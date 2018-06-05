@@ -36,7 +36,7 @@ int main(int argc, char* arg[]){
     args = std::string((arg[1]));
   }
 
-  const uint64_t ITERATION = 100;
+  const uint64_t ITERATION = 10;
   std::string msg;
   // std::cout << args << std::endl;
   if(args.compare("-s") == 0){
