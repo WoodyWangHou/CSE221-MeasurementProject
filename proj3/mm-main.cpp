@@ -13,7 +13,7 @@ main testing procedures
 #include <iostream>
 #include <unistd.h>
 #include <cstring>
-#include "nwTest.hpp"
+#include "nwFsTest.hpp"
 
 const double BYTE_TO_MBYTE = 1024.0 * 1024.0;
 
@@ -46,9 +46,10 @@ int main(int argc, char* arg[]){
     exit(1);
   }
 
-  logHeader("Peak Bandwidth Measurement: Remote (AWS)");
+  // test localhost network peak bandwidth
+  logHeader("Peak Bandwidth Measurement: Localhost");
 
-  test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
+  test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
   double MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   double stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
@@ -57,9 +58,10 @@ int main(int argc, char* arg[]){
   msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
   log(msg);
 
-  logHeader("Peak Bandwidth Measurement: Localhost");
+  // test remote network peak bandwidth
+  logHeader("Peak Bandwidth Measurement: Remote (AWS)");
 
-  test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
+  test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
   MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
