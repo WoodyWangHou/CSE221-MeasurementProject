@@ -36,7 +36,8 @@ int main(int argc, char* arg[]){
     args = std::string((arg[1]));
   }
 
-  const uint64_t ITERATION = 10;
+  const uint64_t REMOTE_ITERATION = 10;
+  const uint64_t LOCAL_ITERATION = 100;
   std::string msg;
   // std::cout << args << std::endl;
   if(args.compare("-s") == 0){
@@ -47,7 +48,7 @@ int main(int argc, char* arg[]){
 
   logHeader("Peak Bandwidth Measurement: Remote (AWS)");
 
-  test.peakNetworkBandWidthTestRemote(ITERATION);
+  test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
   double MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   double stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
@@ -58,7 +59,7 @@ int main(int argc, char* arg[]){
 
   logHeader("Peak Bandwidth Measurement: Localhost");
 
-  test.peakNetworkBandWidthTestLocal(ITERATION);
+  test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
   MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
   msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
