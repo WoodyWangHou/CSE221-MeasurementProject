@@ -98,7 +98,9 @@ void NWTest::bandWidthMeasurement(int servSock, uint64_t iter){
     memset(&buffer, 0, sizeof(buffer));
     this->timer.warmUp();
 
+    log("start sending data ...");
     for(uint64_t i = 0; i < iter; i++){
+        log("Complete iteration " + std::to_string(i));
         uint64_t start = this->timer.getCpuCycle();
         for(unsigned i = 0; i < TOTALSIZE; i++){
             if((numBytes = send(servSock, &buffer, sizeof(buffer), 0)) < 0){
