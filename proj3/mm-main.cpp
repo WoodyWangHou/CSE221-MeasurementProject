@@ -15,20 +15,50 @@ main testing procedures
 #include <cstring>
 #include "nwTest.hpp"
 
+const double BYTE_TO_MBYTE = 1024.0 * 1024.0;
+
 const std::string DELIMITER = "*******************************";
+void logHeader(std::string msg){
+  std::cout << DELIMITER << std::endl;
+  std::cout << msg << std::endl;
+  std::cout << DELIMITER << std::endl;
+}
 
-int main(char * arg){
+void log(std::string msg){
+  std::cout << msg << std::endl;
+}
 
-  // MMTest mem_test;
-  std::string args(arg);
-  const uint64_t ITERATION = 5000;
-  // make sure file is larger than memory
-  const uint64_t NUM_PAGES = 3000000;
-  const uint64_t PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
+int main(int argc, char* arg[]){
 
-  std::cout << DELIMITER << "\n";
-  std::cout << "Page Fault Measurement" <<"\n";
-  std::cout << DELIMITER << "\n";
+  NWTest test;
+  std::string args;
+  if(argc > 1){
+    args = std::string((arg[1]));
+  }
+
+  const uint64_t ITERATION = 100;
+  std::string msg;
+  // std::cout << args << std::endl;
+  if(args.compare("-s") == 0){
+    // server
+    test.peakNetworkBandWidthServer();
+    exit(1);
+  }
+
+  logHeader("Peak Bandwidth Measurement: Remote");
+
+  // test.peakNetworkBandWidthTestRemote(ITERATION);
+  // std::string msg = "Measured Peak BandWidth Remote Throughput: " + std::to_string(test.getAvg()) + " byte/msec";
+  // log(msg);
+
+  test.peakNetworkBandWidthTestLocal(ITERATION);
+  double MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
+  double stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
+  msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
+  log(msg);
+
+  msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
+  log(msg);
 
   return 0;
 }
