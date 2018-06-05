@@ -17,11 +17,7 @@ implementation of testing procedures: context switching time measurement
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "nwTest.hpp"
-// #include <sys/stat.h>
 #include <errno.h>
-// #include <fcntl.h>
-// #include <sys/mman.h>
-// #include <math.h>
 
 /*****************************************************
 * Constructor Implementation:
@@ -68,7 +64,7 @@ void NWTest::HandleTCPClient(int clntSock){
     std::cerr << "Server Received bytes" << std::endl;
 
     do{
-      numBytesRcvd = recv(clntSock, buffer, BUFSIZE, 0);
+      numBytesRcvd = recv(clntSock, buffer, BUFSIZE, MSG_WAITALL);
       if(numBytesRcvd < 0){
         DieWithMessage("recv() failed");
       }
@@ -100,19 +96,17 @@ void NWTest::bandWidthMeasurement(int servSock, uint64_t iter){
     char buffer[BUFSIZE];
     ssize_t numBytes;
     memset(&buffer, 0, sizeof(buffer));
-    uint64_t total = 0;
     this->timer.warmUp();
-    
+
     for(uint64_t i = 0; i < iter; i++){
+        uint64_t start = this->timer.getCpuCycle();
         for(unsigned i = 0; i < TOTALSIZE; i++){
-          uint64_t start = this->timer.getCpuCycle();
             if((numBytes = send(servSock, &buffer, sizeof(buffer), 0)) < 0){
                 DieWithMessage("send() failed");
             }
-          uint64_t end = this->timer.getCpuCycle();
-          total += end - start;
         }
-        double msec = this->timer.cycleToMsSec(total);
+        uint64_t end = this->timer.getCpuCycle();
+        double msec = this->timer.cycleToMsSec(end - start);
         double thruput = (double) (TOTALSIZE * BUFSIZE) / msec;
         this->res.push_back(thruput);
     }
