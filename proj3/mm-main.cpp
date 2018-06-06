@@ -70,7 +70,7 @@ int main(int argc, char* arg[]){
   log(msg);
 
   // Sequential File Read Time
-  for(uint64_t filesize = 1; filesize <= 1024; filesize  *= 2){
+  for(uint64_t filesize = 1; filesize <= 128; filesize  *= 2){
 
       logHeader("File Read Sequential Access Time: " + std::to_string(filesize) + " Mbytes");
 
