@@ -1,8 +1,8 @@
 CC=g++
 CFLAGS=-ggdb -std=c++11 -Wall -pedantic
 
-H_FILES=nwFsTest.hpp timer.hpp
-FILES=mm-main.cpp nwFsTest.cpp timer.cpp
+H_FILES=nwFsTest.hpp timer.hpp nwTest.hpp
+FILES=mm-main.cpp nwFsTest.cpp nwTest.cpp timer.cpp
 
 all: nw_fs_test
 

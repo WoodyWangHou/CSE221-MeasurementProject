@@ -18,6 +18,11 @@ implementation of testing procedures: context switching time measurement
 #include <arpa/inet.h>
 #include "nwTest.hpp"
 #include <errno.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <resolv.h>
+#include <netdb.h>
+
 
 /*****************************************************
 * Constructor Implementation:
@@ -114,6 +119,8 @@ void NWTest::bandWidthMeasurement(int servSock, uint64_t iter){
     }
 }
 
+
+
 int NWTest::setUpSocket(unsigned short servPort, int mode){
     int servSock = createSocket(servPort);
     switch(mode){
@@ -144,6 +151,8 @@ int NWTest::setUpSocket(unsigned short servPort, int mode){
 
         }
       break;
+
+      
 
       case SEND_REMOTE:
         // set up socket as client
@@ -195,6 +204,161 @@ double NWTest::getAvg(){
     return avg;
 }
 
+/*************************************************************
+* Ping Test Implementation:
+**************************************************************/
+struct packet
+{
+  struct icmphdr hdr;
+  char msg[PACKETSIZE-sizeof(struct icmphdr)];
+};
+
+
+
+int NWTest::createPingSocket() {
+
+    int sock;
+    int opt = 1;
+
+    if((sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) 
+      DieWithMessage("creat ping server socket error");
+
+    if (setsockopt(servSock, SOL_SOCKET, 
+      SO_REUSEPORT, &opt, sizeof(opt)))
+    DieWithError("setsockopt() failed");
+
+    if ( fcntl(sd, F_SETFL, O_NONBLOCK) != 0 )
+        DieWithError("Request nonblocking I/O");
+
+    return sock;
+}
+
+
+
+void NWTest::pingServer() {
+
+    int servSock;  /* socket descriptor for server */
+    int clntSock;  /* socket descriptor for client */
+    int opt = 1;  /* opt for setsocketopt */
+    
+    unsigned int clntLen;            /* Length of client address data structure */
+
+
+    servSock = createPingSocket();
+   
+    struct sockaddr_in srcAddr;     /* Source address */
+    unsigned char buf[1024];        /* msg buffer */
+
+
+
+    for (;;){ 
+      int len=sizeof(addr);
+      int bytes = 0;
+
+      bzero(buf, sizeof(buf));
+      bytes = recvfrom(sd, buf, sizeof(buf), MSG_NOBLOCK, (struct sockaddr*)&srcAddr, &len);
+      if ( bytes > 0 )
+        sendToSrc(buf, bytes, srcAddr);
+      else
+        perror("recvfrom");
+    }
+    exit(0);
+}
+
+
+struct packet NWTest::icmpPacket() {
+    struct packet pckt;
+    
+    bzero(&pckt, sizeof(pckt));
+    pckt.hdr.type = ICMP_ECHO;
+    memset(pckt.msg, 0, sizeof(pckt.msg));
+    pckt.hdr.checksum = checksum(&pckt, sizeof(pckt));
+    return pckt;
+}
+
+
+void NWTest::senToSrc(unsigned char buf[], int sz, struct sockaddr_in src) {
+    cout << "Received icmp message" << sz << " bytes...." <<"ready to reply back" << endl;
+}
+
+
+void NWTest::ping(struct sockaddr_in addr, int sock, strcut packet pckt) {
+
+    struct sockaddr_in r_addr;
+
+    for (;;) { 
+        int len=sizeof(r_addr);
+
+        if (recvfrom(sock, &pckt, sizeof(pckt), 0, (struct sockaddr*)&r_addr, &len) > 0 ) {
+            cout << sizeof(pckt) << "bytes from " << inet_ntoa(&r_addr->sin_addr) << ": ";
+            break;
+        } 
+        if (sendto(sock, &pckt, sizeof(pckt), 0, (struct sockaddr*)addr, sizeof(*addr)) <= 0)
+          DieWithMessage("sendto");     
+    }
+}
+
+void NWTest::p() {
+    cout << " test " << endl;
+}
+
+
+struct sockaddr_in NWTest::srcAddr(string ip) {
+    struct sockaddr_in addr;
+
+    if(inet_pton(AF_INET, &ip[0], &addr.sin_addr.s_addr) <= 0){
+        DieWithMessage("inet_pton() failed");
+    }
+    addr.sin_family = AF_INET;
+    addr.sin_port = 0;
+    return addr;
+}
+
+void NWTest::testPingLocal(uint64_t iter) {
+    resetNWTest();
+
+    //
+    const int val=255;
+    int cnt=1;
+    struct packet pckt;
+    int sock;
+    struct sockaddr_in s_addr;
+
+
+    sock = createPingSocket();
+    pckt = icmpPacket();
+    src_addr = srcAddr(LOCALIP);
+    
+    
+
+    this->timer.warmUp();
+    for (int i = 0; i < iter; i++) {
+        uint64_t start = this.getCpuCycle();
+        ping(src_addr, sock, pckt);
+        uint64_t end = this.getCpuCycle();
+        double msec = this->timer.cycleToMsSec(end - start);
+        cout << "time= "<< msec << " ms" << endl;
+        this.res.push_back(msec);
+    }
+    cout << "---- ping "<< inet_ntoa(&src_addr->sin_addr) << " stat ----" << endl;
+    cout << "round trip avg/stddev:  " << res.getAvg() << " / " << res.getStddev() << endl;
+
+}
+
+unsigned short NWTest::checksum(void *b, int len){ 
+    unsigned short *buf = b;
+    unsigned int sum=0;
+    unsigned short result;
+
+    for ( sum = 0; len > 1; len -= 2 )
+      sum += *buf++;
+    if ( len == 1 )
+      sum += *(unsigned char*)buf;
+    sum = (sum >> 16) + (sum & 0xFFFF);
+    sum += (sum >> 16);
+    result = ~sum;
+    return result;
+}
 
 /*************************************************************
 * Peak Network BandWdith bandwidth Implementation:

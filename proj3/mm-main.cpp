@@ -14,6 +14,7 @@ main testing procedures
 #include <unistd.h>
 #include <cstring>
 #include "nwFsTest.hpp"
+#include "nwTest.hpp"
 
 const std::string DELIMITER = "*******************************";
 void logHeader(std::string msg){
@@ -44,6 +45,15 @@ int main(int argc, char* arg[]){
     test.peakNetworkBandWidthServer();
     exit(1);
   }
+
+  // ping server
+  if(args.compare("-p") == 0){
+    // server
+    test.peakNetworkBandWidthServer();
+    exit(1);
+  }
+
+
 
   // test localhost network peak bandwidth
   logHeader("Peak Bandwidth Measurement: Localhost");
@@ -96,5 +106,8 @@ int main(int argc, char* arg[]){
       log(msg);
   }
 
+
+
+  
   return 0;
 }
