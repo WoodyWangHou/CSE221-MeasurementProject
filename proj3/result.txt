@@ -1,0 +1,90 @@
+*******************************
+Peak Bandwidth Measurement: Localhost
+*******************************
+Measured Peak BandWidth Remote Average Throughput: 1251.653530 MByte/sec
+Measured Peak BandWidth Remote Throughput Standard Deviation: 182.811493 MByte/sec
+*******************************
+Peak Bandwidth Measurement: Remote (AWS)
+*******************************
+Measured Peak BandWidth Remote Average Throughput: 4.858875 MByte/sec
+Measured Peak BandWidth Remote Throughput Standard Deviation: 0.439797 MByte/sec
+*******************************
+File Read Sequential Access Time: 1 Mbytes
+*******************************
+Measured File Read Sequential Access Time: 18.112983 ms
+Measured File Read Sequential Access Standard Deviation: 8.348651 ms
+*******************************
+File Read Random Access Time: 1 Mbytes
+*******************************
+Measured File Read Random Access Time: 15.328441 ms
+Measured File Read Random Access Standard Deviation: 7.054339 ms
+*******************************
+File Read Sequential Access Time: 2 Mbytes
+*******************************
+Measured File Read Sequential Access Time: 29.301202 ms
+Measured File Read Sequential Access Standard Deviation: 7.480298 ms
+*******************************
+File Read Random Access Time: 2 Mbytes
+*******************************
+Measured File Read Random Access Time: 25.635851 ms
+Measured File Read Random Access Standard Deviation: 8.899353 ms
+*******************************
+File Read Sequential Access Time: 4 Mbytes
+*******************************
+Measured File Read Sequential Access Time: 45.517231 ms
+Measured File Read Sequential Access Standard Deviation: 8.183975 ms
+*******************************
+File Read Random Access Time: 4 Mbytes
+*******************************
+Measured File Read Random Access Time: 82.155714 ms
+Measured File Read Random Access Standard Deviation: 41.301784 ms
+*******************************
+File Read Sequential Access Time: 8 Mbytes
+*******************************
+Measured File Read Sequential Access Time: 163.418383 ms
+Measured File Read Sequential Access Standard Deviation: 136.257510 ms
+*******************************
+File Read Random Access Time: 8 Mbytes
+*******************************
+Measured File Read Random Access Time: 148.959213 ms
+Measured File Read Random Access Standard Deviation: 61.582277 ms
+*******************************
+File Read Sequential Access Time: 16 Mbytes
+*******************************
+Measured File Read Sequential Access Time: 294.565764 ms
+Measured File Read Sequential Access Standard Deviation: 142.249686 ms
+*******************************
+File Read Random Access Time: 16 Mbytes
+*******************************
+Measured File Read Random Access Time: 415.565575 ms
+Measured File Read Random Access Standard Deviation: 170.961304 ms
+*******************************
+File Read Sequential Access Time: 32 Mbytes
+*******************************
+Measured File Read Sequential Access Time: 638.931305 ms
+Measured File Read Sequential Access Standard Deviation: 504.898453 ms
+*******************************
+File Read Random Access Time: 32 Mbytes
+*******************************
+Measured File Read Random Access Time: 473.960858 ms
+Measured File Read Random Access Standard Deviation: 74.026961 ms
+*******************************
+File Read Sequential Access Time: 64 Mbytes
+*******************************
+Measured File Read Sequential Access Time: 864.508727 ms
+Measured File Read Sequential Access Standard Deviation: 150.525732 ms
+*******************************
+File Read Random Access Time: 64 Mbytes
+*******************************
+Measured File Read Random Access Time: 1237.440115 ms
+Measured File Read Random Access Standard Deviation: 500.005408 ms
+*******************************
+File Read Sequential Access Time: 128 Mbytes
+*******************************
+Measured File Read Sequential Access Time: 1722.003500 ms
+Measured File Read Sequential Access Standard Deviation: 344.909305 ms
+*******************************
+File Read Random Access Time: 128 Mbytes
+*******************************
+Measured File Read Random Access Time: 1726.032878 ms
+Measured File Read Random Access Standard Deviation: 497.088872 ms
