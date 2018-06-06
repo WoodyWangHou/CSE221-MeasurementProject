@@ -21,7 +21,7 @@ const uint64_t TOTALSIZE = 50; // 50 mb
 
 const std::string TEST_FILENAME_BASE = "./test.t"; // test file name, will be created if not exist, 8Mb large
 const uint64_t BYTE_TO_MBYTE = 1024 * 1024;
-const uint64_t FILE_BUFSIZE = 4 * 1024; // 64K buffer
+const uint64_t FILE_BUFSIZE = 64 * 1024; // 64K buffer
 
 class NWTest{
   private:

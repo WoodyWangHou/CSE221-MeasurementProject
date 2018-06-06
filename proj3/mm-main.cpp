@@ -36,7 +36,7 @@ int main(int argc, char* arg[]){
   }
 
   const uint64_t REMOTE_ITERATION = 10;
-  const uint64_t LOCAL_ITERATION = 100;
+  const uint64_t LOCAL_ITERATION = 10;
   std::string msg;
   // std::cout << args << std::endl;
   if(args.compare("-s") == 0){
