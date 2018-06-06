@@ -29,15 +29,15 @@ void log(std::string msg){
 
 int main(int argc, char* arg[]){
   double MBytes;
-  NWTest test;
   double stdv;
+  NWTest test;
   std::string args;
   if(argc > 1){
     args = std::string((arg[1]));
   }
 
   const uint64_t REMOTE_ITERATION = 10;
-  const uint64_t LOCAL_ITERATION = 100;
+  const uint64_t LOCAL_ITERATION = 10;
   std::string msg;
   // std::cout << args << std::endl;
   if(args.compare("-s") == 0){
@@ -87,10 +87,10 @@ int main(int argc, char* arg[]){
       test.fileSequentialReadTest(LOCAL_ITERATION, filesize);
       double tm = test.getAvg(); // local average file read time, msec/Mbytes
       stdv = test.getStddev();
-      msg = "Measured File Read Sequential Access Time: " + std::to_string(tm) + " msec/MBytes";
+      msg = "Measured File Read Sequential Access Time: " + std::to_string(tm) + " ms";
       log(msg);
 
-      msg = "Measured File Read Sequential Access Standard Deviation: " + std::to_string(stdv) + " msec/MBytes";
+      msg = "Measured File Read Sequential Access Standard Deviation: " + std::to_string(stdv) + " ms";
       log(msg);
 
       // Random File Read Time
@@ -99,10 +99,10 @@ int main(int argc, char* arg[]){
       test.fileRandomReadTest(LOCAL_ITERATION, filesize);
       tm = test.getAvg(); // local average file read time, msec/Mbytes
       stdv = test.getStddev();
-      msg = "Measured File Read Random Access Time: " + std::to_string(tm) + " msec/MBytes";
+      msg = "Measured File Read Random Access Time: " + std::to_string(tm) + " ms";
       log(msg);
 
-      msg = "Measured File Read Random Access Standard Deviation: " + std::to_string(stdv) + " msec/MBytes";
+      msg = "Measured File Read Random Access Standard Deviation: " + std::to_string(stdv) + " ms";
       log(msg);
   }
 
