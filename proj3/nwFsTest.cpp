@@ -110,7 +110,8 @@ void NWTest::bandWidthMeasurement(int servSock, uint64_t iter){
         }
         uint64_t end = this->timer.getCpuCycle();
         double msec = this->timer.cycleToMsSec(end - start);
-        double thruput = (double) (TOTALSIZE * BUFSIZE) / msec;
+        double thruput = (((double) (TOTALSIZE * BUFSIZE) / msec) / static_cast<double>(BYTE_TO_MBYTE)) * static_cast<double>(SEC_TO_MSEC);
+
         this->res.push_back(thruput);
     }
 }
@@ -165,12 +166,12 @@ int NWTest::setUpSocket(unsigned short servPort, int mode){
 /******************************************************
 * Private file helpers:
 *************************************************************/
-int NWTest::openFileWithNoCache(std::string fileName, bool isSequential){
-    //TODO
+int NWTest::openFileWithNoCache(std::string fileNameBase, bool isSequential, uint64_t fileSize){
     int fd;
-
+    const uint64_t FILE_SIZE = fileSize * BYTE_TO_MBYTE;
     // Linux: open file, read / write directly to disk
-    if((fd = open(&fileName[0], O_SYNC | O_CREAT | O_DIRECT, S_IRUSR | S_IWUSR)) < 0){
+    std::string fileName = fileNameBase + std::to_string(fileSize);
+    if((fd = open(&fileName[0], O_SYNC | O_CREAT | O_DIRECT | O_RDWR, S_IRUSR | S_IWUSR)) < 0){
       std::string error(strerror(errno));
       std::string msg = "open() failed: " + error;
       DieWithMessage(msg);
@@ -185,7 +186,7 @@ int NWTest::openFileWithNoCache(std::string fileName, bool isSequential){
 
     if(ftruncate(fd, FILE_SIZE) < 0){
       std::string error(strerror(errno));
-      std::string msg = "fallocate() failed: " + error;
+      std::string msg = "ftruncate() failed: " + error;
       DieWithMessage(msg);
     }
 
@@ -212,9 +213,10 @@ int NWTest::openFileWithNoCache(std::string fileName, bool isSequential){
     return fd;
 }
 
-void NWTest::sequentialReadMeasurement(int fd, uint64_t iter){
+void NWTest::sequentialReadMeasurement(int fd, uint64_t iter, uint64_t fileSize){
     uint64_t start;
     uint64_t end;
+
     char buffer[FILE_BUFSIZE];
     this->timer.warmUp();
 
@@ -223,7 +225,8 @@ void NWTest::sequentialReadMeasurement(int fd, uint64_t iter){
         while(read(fd, &buffer, sizeof(buffer)) > 0){}
         end = this->timer.getCpuCycle();
         double tm = this->timer.cycleToMsSec(end - start);
-        this->res.push_back(tm);
+        double MbperMSec = tm / (double) fileSize;
+        this->res.push_back(MbperMSec);
 
         // reset fd offset
         if(lseek(fd, 0, SEEK_SET) < 0){
@@ -234,27 +237,35 @@ void NWTest::sequentialReadMeasurement(int fd, uint64_t iter){
     }
 }
 
-void NWTest::randomReadMeasurement(int fd,  uint64_t iter){
-  //TODO
-    // uint64_t start;
-    // uint64_t end;
-    // char buffer[FILE_BUFSIZE];
-    // this->timer.warmUp();
-    //
-    // for(unsigned i = 0; i < iter; i++){
-    //     start = this->timer.getCpuCycle();
-    //     while(read(fd, &buffer, sizeof(buffer)) > 0){}
-    //     end = this->timer.getCpuCycle();
-    //     double tm = this->timer.cycleToMsSec(end - start);
-    //     this->res.push_back(tm);
-    //
-    //     // reset fd offset
-    //     if(lseek(fd, 0, SEEK_SET) < 0){
-    //         std::string error(strerror(errno));
-    //         std::string msg = "lseek() failed: " + error;
-    //         DieWithMessage(msg);
-    //     }
-    // }
+void NWTest::randomReadMeasurement(int fd,  uint64_t iter, uint64_t fileSize){
+      uint64_t start;
+      uint64_t end;
+      const uint64_t FILE_SIZE = fileSize * BYTE_TO_MBYTE;
+      char buffer[FILE_BUFSIZE];
+      this->timer.warmUp();
+
+      for(unsigned i = 0; i < iter; i++){
+
+          start = this->timer.getCpuCycle();
+          for(unsigned i = 0; i < (FILE_SIZE / FILE_BUFSIZE); i++){
+            int seed = rand() % (FILE_SIZE / FILE_BUFSIZE);
+            off_t pos = seed * FILE_BUFSIZE;
+            read(fd, &buffer, sizeof(buffer));
+            lseek(fd, pos, SEEK_SET);
+          }
+          end = this->timer.getCpuCycle();
+
+          double tm = this->timer.cycleToMsSec(end - start);
+          double MbperMSec = tm / (double) fileSize;
+          this->res.push_back(MbperMSec);
+
+          // reset fd offset
+          if(lseek(fd, 0, SEEK_SET) < 0){
+              std::string error(strerror(errno));
+              std::string msg = "lseek() failed: " + error;
+              DieWithMessage(msg);
+          }
+      }
 }
 
 /*****************************************************
@@ -316,15 +327,17 @@ void NWTest::peakNetworkBandWidthTestRemote(uint64_t iter){
     close(servSock);
 }
 
-void NWTest::fileSequentialReadTest(uint64_t iter){
+void NWTest::fileSequentialReadTest(uint64_t iter, uint64_t fileSize){
     // set up file as non cache
-    int fd = openFileWithNoCache(TEST_FILENAME, true);
-    sequentialReadMeasurement(fd, iter);
+    resetNWTest();
+    int fd = openFileWithNoCache(TEST_FILENAME_BASE, true, fileSize);
+    sequentialReadMeasurement(fd, iter, fileSize);
     close(fd);
 }
 
-void NWTest::fileRandomReadTest(uint64_t iter){
-    int fd = openFileWithNoCache(TEST_FILENAME, false);
-    randomReadMeasurement(fd, iter);
+void NWTest::fileRandomReadTest(uint64_t iter, uint64_t fileSize){
+    resetNWTest();
+    int fd = openFileWithNoCache(TEST_FILENAME_BASE, false, fileSize);
+    randomReadMeasurement(fd, iter, fileSize);
     close(fd);
 }

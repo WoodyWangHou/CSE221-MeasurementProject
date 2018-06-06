@@ -19,8 +19,8 @@ const uint64_t MAXPENDING = 5;
 const uint64_t BUFSIZE = 1024 * 1024; // 1Mb, based on Imbench
 const uint64_t TOTALSIZE = 50; // 50 mb
 
-const std::string TEST_FILENAME = "test.t"; // test file name, will be created if not exist, 8Mb large
-const off_t FILE_SIZE = 8 * 1024; // 8 Mbytes
+const std::string TEST_FILENAME_BASE = "./test.t"; // test file name, will be created if not exist, 8Mb large
+const uint64_t BYTE_TO_MBYTE = 1024 * 1024;
 const uint64_t FILE_BUFSIZE = 64 * 1024; // 64K buffer
 
 class NWTest{
@@ -75,9 +75,9 @@ class NWTest{
     * file measurement helpers
     */
 
-    int openFileWithNoCache(std::string fileName, bool isSequential);
-    void sequentialReadMeasurement(int fd,  uint64_t iter);
-    void randomReadMeasurement(int fd,  uint64_t iter);
+    int openFileWithNoCache(std::string fileName, bool isSequential, uint64_t fileSize);
+    void sequentialReadMeasurement(int fd,  uint64_t iter, uint64_t fileSize);
+    void randomReadMeasurement(int fd,  uint64_t iter, uint64_t fileSize);
 
 	public:
     /**
@@ -95,17 +95,17 @@ class NWTest{
     double getAvg();
 
 		/**
-		* peak bandwidth test
+		* peak bandwidth test, 3.2
 		*/
 		void peakNetworkBandWidthServer();
 		void peakNetworkBandWidthTestRemote(uint64_t iter);
 		void peakNetworkBandWidthTestLocal(uint64_t iter);
 
     /**
-    * file read test
+    * file read test: 4.2, 4.3
     */
-    void fileSequentialReadTest(uint64_t iter);
-    void fileRandomReadTest(uint64_t iter);
+    void fileSequentialReadTest(uint64_t iter, uint64_t fileSize);
+    void fileRandomReadTest(uint64_t iter, uint64_t fileSize);
 };
 
 #endif
