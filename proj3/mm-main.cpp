@@ -27,7 +27,8 @@ void log(std::string msg){
 }
 
 int main(int argc, char* arg[]){
-
+  double MBytes;
+  double stdv;
   NWTest test;
   std::string args;
   if(argc > 1){
@@ -45,41 +46,41 @@ int main(int argc, char* arg[]){
   }
 
   // test localhost network peak bandwidth
-  logHeader("Peak Bandwidth Measurement: Localhost");
-
-  test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
-  double MBytes = test.getAvg();
-  double stdv = test.getStddev();
-  msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
-  log(msg);
-
-  msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
-  log(msg);
-
-  // // test remote network peak bandwidth
-  logHeader("Peak Bandwidth Measurement: Remote (AWS)");
-
-  test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
-  MBytes = test.getAvg();
-  stdv = test.getStddev();
-  msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
-  log(msg);
-
-  msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
-  log(msg);
+  // logHeader("Peak Bandwidth Measurement: Localhost");
+  //
+  // test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
+  // double MBytes = test.getAvg();
+  // double stdv = test.getStddev();
+  // msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
+  // log(msg);
+  //
+  // msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
+  // log(msg);
+  //
+  // // // test remote network peak bandwidth
+  // logHeader("Peak Bandwidth Measurement: Remote (AWS)");
+  //
+  // test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
+  // MBytes = test.getAvg();
+  // stdv = test.getStddev();
+  // msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
+  // log(msg);
+  //
+  // msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
+  // log(msg);
 
   // Sequential File Read Time
-  for(uint64_t filesize = 1; filesize <= 128; filesize  *= 2){
+  for(uint64_t filesize = 1; filesize <= 1024; filesize  *= 2){
 
       logHeader("File Read Sequential Access Time: " + std::to_string(filesize) + " Mbytes");
 
       test.fileSequentialReadTest(LOCAL_ITERATION, filesize);
       double tm = test.getAvg(); // local average file read time, msec/Mbytes
       stdv = test.getStddev();
-      msg = "Measured File Read Sequential Access Time: " + std::to_string(tm) + " msec/MBytes";
+      msg = "Measured File Read Sequential Access Time: " + std::to_string(tm) + " ms";
       log(msg);
 
-      msg = "Measured File Read Sequential Access Standard Deviation: " + std::to_string(stdv) + " msec/MBytes";
+      msg = "Measured File Read Sequential Access Standard Deviation: " + std::to_string(stdv) + " ms";
       log(msg);
 
       // Random File Read Time
@@ -88,10 +89,10 @@ int main(int argc, char* arg[]){
       test.fileRandomReadTest(LOCAL_ITERATION, filesize);
       tm = test.getAvg(); // local average file read time, msec/Mbytes
       stdv = test.getStddev();
-      msg = "Measured File Read Random Access Time: " + std::to_string(tm) + " msec/MBytes";
+      msg = "Measured File Read Random Access Time: " + std::to_string(tm) + " ms";
       log(msg);
 
-      msg = "Measured File Read Random Access Standard Deviation: " + std::to_string(stdv) + " msec/MBytes";
+      msg = "Measured File Read Random Access Standard Deviation: " + std::to_string(stdv) + " ms";
       log(msg);
   }
 

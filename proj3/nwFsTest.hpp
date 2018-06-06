@@ -75,7 +75,7 @@ class NWTest{
     * file measurement helpers
     */
 
-    int openFileWithNoCache(std::string fileName, bool isSequential, uint64_t fileSize);
+    int openFileWithNoCache(std::string fileName, uint64_t fileSize);
     void sequentialReadMeasurement(int fd,  uint64_t iter, uint64_t fileSize);
     void randomReadMeasurement(int fd,  uint64_t iter, uint64_t fileSize);
 
