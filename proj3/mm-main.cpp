@@ -27,8 +27,9 @@ void log(std::string msg){
 }
 
 int main(int argc, char* arg[]){
-
+  double MBytes;
   NWTest test;
+  double stdv;
   std::string args;
   if(argc > 1){
     args = std::string((arg[1]));
@@ -48,8 +49,8 @@ int main(int argc, char* arg[]){
   logHeader("Peak Bandwidth Measurement: Localhost");
 
   test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
-  double MBytes = test.getAvg();
-  double stdv = test.getStddev();
+  MBytes = test.getAvg();
+  stdv = test.getStddev();
   msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
   log(msg);
 
