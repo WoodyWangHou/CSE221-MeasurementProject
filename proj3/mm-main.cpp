@@ -46,28 +46,28 @@ int main(int argc, char* arg[]){
   }
 
   // test localhost network peak bandwidth
-  // logHeader("Peak Bandwidth Measurement: Localhost");
-  //
-  // test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
-  // double MBytes = test.getAvg();
-  // double stdv = test.getStddev();
-  // msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
-  // log(msg);
-  //
-  // msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
-  // log(msg);
-  //
-  // // // test remote network peak bandwidth
-  // logHeader("Peak Bandwidth Measurement: Remote (AWS)");
-  //
-  // test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
-  // MBytes = test.getAvg();
-  // stdv = test.getStddev();
-  // msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
-  // log(msg);
-  //
-  // msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
-  // log(msg);
+  logHeader("Peak Bandwidth Measurement: Localhost");
+
+  test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
+  MBytes = test.getAvg();
+  stdv = test.getStddev();
+  msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
+  log(msg);
+
+  msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
+  log(msg);
+
+  // // test remote network peak bandwidth
+  logHeader("Peak Bandwidth Measurement: Remote (AWS)");
+
+  test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
+  MBytes = test.getAvg();
+  stdv = test.getStddev();
+  msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
+  log(msg);
+
+  msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
+  log(msg);
 
   // Sequential File Read Time
   for(uint64_t filesize = 1; filesize <= 1024; filesize  *= 2){

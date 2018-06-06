@@ -15,6 +15,7 @@ implementation of testing procedures: context switching time measurement
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "nwFsTest.hpp"
@@ -50,7 +51,8 @@ void NWTest::bindSocket(int servSock, unsigned short servPort){
 
     servAddr_t = (sockaddr *) &servAddr;
     //bind to local address
-    if(bind(servSock, servAddr_t, sizeof(*servAddr_t)) < 0){
+
+    if(::bind(servSock, servAddr_t, sizeof(*servAddr_t)) < 0){
         std::string msg = "bind() failed: ";
         std::string error(strerror(errno));
         DieWithMessage(msg + error);
@@ -88,7 +90,7 @@ void NWTest::connectSocket(int clntSock, std::string ip, unsigned short servPort
     servAddr_t = (sockaddr *) &servAddr;
 
     if(connect(clntSock, servAddr_t, sizeof(*servAddr_t)) < 0){
-        DieWithMessage("connect() failed");
+        DieWithMessage("connect() failed, maybe forget to start local server? run ./nw_fs_test -s");
     }
     log("Connected");
     return;
@@ -102,7 +104,7 @@ void NWTest::bandWidthMeasurement(int servSock, uint64_t iter){
 
     log("start sending data ...");
     for(uint64_t i = 0; i < iter; i++){
-        // log("Complete iteration " + std::to_string(i));
+        log("Complete iteration " + std::to_string(i));
         uint64_t start = this->timer.getCpuCycle();
         for(unsigned i = 0; i < TOTALSIZE; i++){
             if((numBytes = send(servSock, &buffer, sizeof(buffer), 0)) < 0){
@@ -173,7 +175,7 @@ int NWTest::openFileWithNoCache(std::string fileNameBase, uint64_t fileSize){
     // Linux: open file, read / write directly to disk
     std::string fileName = fileNameBase + std::to_string(fileSize);
 
-    if((fd = open(&fileName[0], O_SYNC | O_CREAT | O_RDWR | O_DIRECT, S_IRUSR | S_IWUSR)) < 0){
+    if((fd = open(&fileName[0], O_CREAT | O_RDWR | O_DIRECT, S_IRUSR | S_IWUSR)) < 0){
       std::string error(strerror(errno));
       std::string msg = "open() failed: " + error;
       DieWithMessage(msg);
@@ -186,11 +188,24 @@ int NWTest::openFileWithNoCache(std::string fileNameBase, uint64_t fileSize){
     //   DieWithMessage(msg);
     // }
 
+    // // OSX: open
+    // if((fd = open(&fileName[0], O_SYNC | O_CREAT | O_RDWR | O_DIRECT, S_IRUSR | S_IWUSR)) < 0){
+    //   std::string error(strerror(errno));
+    //   std::string msg = "open() failed: " + error;
+    //   DieWithMessage(msg);
+    // }
+
     if(ftruncate(fd, FILE_SIZE) < 0){
       std::string error(strerror(errno));
       std::string msg = "ftruncate() failed: " + error;
       DieWithMessage(msg);
     }
+
+    // if(posix_fadvise(fd, 0, FILE_SIZE, POSIX_FADV_DONTNEED) < 0){
+    //   std::string error(strerror(errno));
+    //   std::string msg = "posix_fadvise() failed: " + error;
+    //   DieWithMessage(msg);
+    // }
 
     // OSX: no cache
     // if(fcntl(fd, F_NOCACHE, 1) < 0) {
@@ -208,7 +223,7 @@ void NWTest::sequentialReadMeasurement(int fd, uint64_t iter, uint64_t fileSize)
 
     for(unsigned i = 0; i < iter; i++){
         start = this->timer.getCpuCycle();
-        while(read(fd, buffer, FILE_BUFSIZE) > 0){}
+        while((read(fd, buffer, FILE_BUFSIZE)) > 0){}
         end = this->timer.getCpuCycle();
         double tm = this->timer.cycleToMsSec(end - start);
         this->res.push_back(tm);
