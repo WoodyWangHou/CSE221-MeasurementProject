@@ -11,7 +11,7 @@ implementation of testing procedures: context switching time measurement
 *******************************************************************************************/
 #include <cstdlib>
 // Linux:
-// #include <malloc.h>
+#include <malloc.h>
 #include <cstring>
 #include <sys/types.h>
 #include <unistd.h>
@@ -177,18 +177,18 @@ int NWTest::openFileWithNoCache(std::string fileNameBase, uint64_t fileSize){
     std::string fileName = fileNameBase + std::to_string(fileSize);
 
     // Linux:
-    // if((fd = open(&fileName[0], O_CREAT | O_RDWR | O_DIRECT, S_IRUSR | S_IWUSR)) < 0){
-    //   std::string error(strerror(errno));
-    //   std::string msg = "open() failed: " + error;
-    //   DieWithMessage(msg);
-    // }
-
-    // // OSX: open
-    if((fd = open(&fileName[0], O_SYNC | O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) < 0){
+    if((fd = open(&fileName[0], O_CREAT | O_RDWR | O_DIRECT, S_IRUSR | S_IWUSR)) < 0){
       std::string error(strerror(errno));
       std::string msg = "open() failed: " + error;
       DieWithMessage(msg);
     }
+
+    // // OSX: open
+    // if((fd = open(&fileName[0], O_SYNC | O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) < 0){
+    //   std::string error(strerror(errno));
+    //   std::string msg = "open() failed: " + error;
+    //   DieWithMessage(msg);
+    // }
 
     if(ftruncate(fd, FILE_SIZE) < 0){
       std::string error(strerror(errno));
@@ -196,16 +196,16 @@ int NWTest::openFileWithNoCache(std::string fileNameBase, uint64_t fileSize){
       DieWithMessage(msg);
     }
 
-    // if(posix_fadvise(fd, 0, FILE_SIZE, POSIX_FADV_DONTNEED) < 0){
-    //   std::string error(strerror(errno));
-    //   std::string msg = "posix_fadvise() failed: " + error;
-    //   DieWithMessage(msg);
-    // }
+    if(posix_fadvise(fd, 0, FILE_SIZE, POSIX_FADV_DONTNEED) < 0){
+      std::string error(strerror(errno));
+      std::string msg = "posix_fadvise() failed: " + error;
+      DieWithMessage(msg);
+    }
 
     // OSX: no cache
-    if(fcntl(fd, F_NOCACHE, 1) < 0) {
-        DieWithMessage("fcntl() failed");
-    }
+    // if(fcntl(fd, F_NOCACHE, 1) < 0) {
+    //     DieWithMessage("fcntl() failed");
+    // }
     return fd;
 }
 
@@ -213,10 +213,10 @@ void NWTest::sequentialReadMeasurement(int fd, uint64_t iter, uint64_t fileSize)
     uint64_t start;
     uint64_t end;
     // Linux:
-    // char* buffer = (char*) memalign(FILE_BUFSIZE, FILE_BUFSIZE);
+    char* buffer = (char*) memalign(FILE_BUFSIZE, FILE_BUFSIZE);
 
     //OSX:
-    char buffer[FILE_BUFSIZE];
+    // char buffer[FILE_BUFSIZE];
     memset(buffer, 0, FILE_BUFSIZE);
     this->timer.warmUp();
 
@@ -229,10 +229,10 @@ void NWTest::sequentialReadMeasurement(int fd, uint64_t iter, uint64_t fileSize)
 
         // reset fd offset
         //Linux:
-        // if(lseek64(fd, 0, SEEK_SET) < 0){
+        if(lseek64(fd, 0, SEEK_SET) < 0){
 
         // OSX:
-        if(lseek(fd, 0, SEEK_SET) < 0){
+        // if(lseek(fd, 0, SEEK_SET) < 0){
             std::string error(strerror(errno));
             std::string msg = "lseek() failed: " + error;
             DieWithMessage(msg);
@@ -245,10 +245,10 @@ void NWTest::randomReadMeasurement(int fd,  uint64_t iter, uint64_t fileSize){
       uint64_t end;
       const uint64_t FILE_SIZE = fileSize * BYTE_TO_MBYTE;
       // Linux:
-      // char* buffer = (char*) memalign(FILE_BUFSIZE, FILE_BUFSIZE);
+      char* buffer = (char*) memalign(FILE_BUFSIZE, FILE_BUFSIZE);
 
       //OSX:
-      char buffer[FILE_BUFSIZE];
+      // char buffer[FILE_BUFSIZE];
       memset(buffer, 0, FILE_BUFSIZE);
       this->timer.warmUp();
 
@@ -258,9 +258,9 @@ void NWTest::randomReadMeasurement(int fd,  uint64_t iter, uint64_t fileSize){
           for(unsigned i = 0; i < (FILE_SIZE / FILE_BUFSIZE); i++){
             read(fd, buffer, FILE_BUFSIZE);
             //OSX:
-            lseek(fd, rand() % (FILE_SIZE / FILE_BUFSIZE) * FILE_BUFSIZE, SEEK_SET);
+            // lseek(fd, rand() % (FILE_SIZE / FILE_BUFSIZE) * FILE_BUFSIZE, SEEK_SET);
             // Linux:
-            // lseek64(fd, rand() % (FILE_SIZE / FILE_BUFSIZE) * FILE_BUFSIZE, SEEK_SET);
+            lseek64(fd, rand() % (FILE_SIZE / FILE_BUFSIZE) * FILE_BUFSIZE, SEEK_SET);
           }
           end = this->timer.getCpuCycle();
           double tm = this->timer.cycleToMsSec(end - start);
@@ -268,10 +268,10 @@ void NWTest::randomReadMeasurement(int fd,  uint64_t iter, uint64_t fileSize){
 
           // reset fd offset
           // Linux:
-          // if(lseek64(fd, 0, SEEK_SET) < 0){
+          if(lseek64(fd, 0, SEEK_SET) < 0){
 
           // OSX:
-          if(lseek(fd, 0, SEEK_SET) < 0){
+          // if(lseek(fd, 0, SEEK_SET) < 0){
               std::string error(strerror(errno));
               std::string msg = "lseek() failed: " + error;
               DieWithMessage(msg);

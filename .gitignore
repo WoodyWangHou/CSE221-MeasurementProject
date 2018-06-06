@@ -1,3 +1,5 @@
 proj2/mm_test
 proj2/pageFaultTestFile
 .DS_Store
+proj3/test.t*
+proj3/nw_fs_test
