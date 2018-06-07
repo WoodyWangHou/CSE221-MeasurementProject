@@ -53,7 +53,7 @@ void NWTest::bindSocket(int servSock, unsigned short servPort){
 
     servAddr_t = (sockaddr *) &servAddr;
     //bind to local address
-    if(bind(servSock, servAddr_t, sizeof(*servAddr_t)) < 0){
+    if(bind(servSock, servAddr_t, sizeof(*servAddr_t)) < 0) {
         std::string msg = "bind() failed: ";
         std::string error(strerror(errno));
         DieWithMessage(msg + error);

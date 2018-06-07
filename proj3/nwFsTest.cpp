@@ -120,6 +120,30 @@ void NWTest::bandWidthMeasurement(int servSock, uint64_t iter){
     }
 }
 
+void NWTest::handleEcho(int clntSock) {
+    char buffer[PING_SZ];
+    ssize_t numBytesRcvd;
+    std::cerr << "Start Receiving packets" << std::endl;
+
+    do{
+      numBytesRcvd = recv(clntSock, buffer, PING_SZ, MSG_WAITALL);
+      if(numBytesRcvd < 0){
+        DieWithMessage("recv() failed");
+      }
+      int numBytesWrite = 0;
+      if((numBytesWrite = write(clntSock, buffer, PING_SZ)) < 0) {
+          DieWithMessage("recv() failed");
+      }
+      std::cout << "echo back " << numBytesWrite << " bytes" << std::endl;
+
+    } while(numBytesRcvd > 0);
+    log("Connection Closed");
+    return;
+}
+
+
+
+
 int NWTest::setUpSocket(unsigned short servPort, int mode){
     int servSock = createSocket(servPort);
     switch(mode){
@@ -143,6 +167,33 @@ int NWTest::setUpSocket(unsigned short servPort, int mode){
 
           // clntSock set up, does nothing
           HandleTCPClient(clntSock);
+
+          if(close(clntSock) < 0){
+            DieWithMessage("close() failed");
+          }
+
+        }
+      break;
+      case PING:
+        bindSocket(servSock, servPort);
+        // set up socket as server
+        if(listen(servSock, MAXPENDING) < 0){
+          DieWithMessage("listen() failed");
+        }
+
+        std::cerr << "Echo Test Server started at port: "<< servPort << std::endl;
+        // server loop
+        while(true){
+          struct sockaddr_in clntAddr;
+          socklen_t clntAddrLen = sizeof(clntAddr);
+
+          int clntSock = accept(servSock, (struct sockaddr *) &clntAddr, &clntAddrLen);
+          if(clntSock < 0){
+            DieWithMessage("accept() failed");
+          }
+
+          // clntSock set up, does nothing
+          handleEcho(clntSock);
 
           if(close(clntSock) < 0){
             DieWithMessage("close() failed");
@@ -208,6 +259,7 @@ int NWTest::openFileWithNoCache(std::string fileNameBase, uint64_t fileSize){
     }
     return fd;
 }
+
 
 void NWTest::sequentialReadMeasurement(int fd, uint64_t iter, uint64_t fileSize){
     uint64_t start;
@@ -311,6 +363,289 @@ double NWTest::getAvg(){
     avg /= static_cast<double>(this->res.size());
     return avg;
 }
+
+/*************************************************************
+* Ping Test Implementation:
+**************************************************************/
+
+
+
+
+int NWTest::createPingSocket() {
+
+    int sock;
+    int opt = 1;
+
+    if((sock = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) 
+      DieWithMessage("create raw socket error");
+
+    if (setsockopt(sock, SOL_SOCKET, 
+      SO_REUSEPORT, &opt, sizeof(opt)))
+    DieWithMessage("setsockopt() failed");
+
+    // if ( fcntl(sock, F_SETFL, O_NONBLOCK) != 0 )
+    //     DieWithMessage("Request nonblocking I/O");
+
+    return sock;
+}
+
+
+
+void NWTest::pingTestServer() {
+    setUpSocket(PING_TEST_SERVER_PORT, PING);
+}
+
+
+
+
+void NWTest::sendToSrc(unsigned char buf[], int sz, struct sockaddr_in src) {
+    cout << "Received icmp message" << sz << " bytes...." <<"ready to reply back" << endl;
+}
+
+
+void NWTest::ping(struct sockaddr_in addr, int sock, int mode) {
+
+    struct sockaddr_in r_addr;
+    struct icmp icmp_hdr;
+    memset(&icmp_hdr, 0, sizeof icmp_hdr);
+    
+
+    for (;;) { 
+
+        
+        
+        unsigned char data[PACKET_SIZE];
+        socklen_t len=sizeof(r_addr);
+        int rc;
+        break;
+        memset(data + sizeof(icmp_hdr), 0, PACKET_SIZE - sizeof(icmp_hdr)); //icmp payload
+        icmp_hdr.icmp_type = ICMP_ECHO;
+        icmp_hdr.icmp_cksum = checksum(data, PACKET_SIZE);
+        memcpy(data, &icmp_hdr, sizeof icmp_hdr);
+
+        if((rc = sendto(sock, data, PACKET_SIZE,
+                        0, (struct sockaddr*)&addr, sizeof addr)) <= 0) 
+          DieWithMessage("sendto");
+
+        std::cout << "data sent....waiting for recv" << inet_ntoa(addr.sin_addr) << std::endl;
+
+        if ((rc=recvfrom(sock, data, PACKET_SIZE, 0, (struct sockaddr*)&r_addr, &len) > 0 )) {
+            cout << rc << "bytes from " << inet_ntoa(r_addr.sin_addr) << ": ";
+            break;
+        } 
+    }
+    if (mode == 0) {
+        p("ping -c 10 127.0.0.1");
+    } else {
+        p("ping -c 10 52.25.77.52");
+    }
+    
+}
+
+void NWTest::p(char* cmd) {
+    system(cmd);
+    return;
+}
+
+void NWTest::p() {
+    system("ping -c 5 127.0.0.1");
+    return;
+}
+
+
+
+struct sockaddr_in NWTest::srcAddr(string ip) {
+    struct sockaddr_in addr;
+
+    if(inet_pton(AF_INET, &ip[0], &addr.sin_addr.s_addr) <= 0){
+        DieWithMessage("inet_pton() failed");
+    }
+    addr.sin_family = AF_INET;
+    addr.sin_port = 0;
+    return addr;
+}
+
+
+
+void NWTest::testPingLocal(uint64_t iter) {
+    resetNWTest();
+
+    
+    int sock;
+    struct sockaddr_in src_addr;
+    char buffer[BUFSIZE];
+    char rcvBuf[BUFSIZE];
+    memset(buffer, 0, BUFSIZE);
+
+    sock = setUpSocket(PING_TEST_SERVER_PORT, SEND_LOCAL);
+    int bytesWrite = 0;
+    int bytesRead = 0;
+
+    this->timer.warmUp();
+    for (int i = 0; i < iter; i++) {
+        uint64_t start = this->timer.getCpuCycle();
+        
+        if ((bytesWrite = write(sock, buffer, PING_SZ)) < 0) {
+            DieWithMessage("echo write failed on client");
+        }
+
+
+        if ((bytesRead = read(sock, rcvBuf, PING_SZ)) < 0) {
+            DieWithMessage("echo write failed on client");
+        }
+        uint64_t end = this->timer.getCpuCycle();
+        double msec = this->timer.cycleToMsSec(end - start);
+        cout <<  "echo " << bytesRead << "bytes......" << "time= "<< msec << " ms" << endl;
+        this->res.push_back(msec);
+    }
+
+    cout << "min/std   " << getAvg() << "/" << getStddev()<< endl;
+}
+
+
+
+void NWTest::testPingRemote(uint64_t iter) {
+    resetNWTest();
+    
+    
+    int sock;
+    struct sockaddr_in src_addr;
+    char buffer[BUFSIZE];
+    char rcvBuf[BUFSIZE];
+    memset(buffer, 0, BUFSIZE);
+
+    sock = setUpSocket(PING_TEST_SERVER_PORT, SEND_REMOTE);
+    int bytesWrite = 0;
+    int bytesRead = 0;
+
+    this->timer.warmUp();
+    for (int i = 0; i < iter; i++) {
+        uint64_t start = this->timer.getCpuCycle();
+        
+        if ((bytesWrite = write(sock, buffer, PING_SZ)) < 0) {
+            DieWithMessage("echo write failed on client");
+        }
+
+
+        if ((bytesRead = read(sock, rcvBuf, PING_SZ)) < 0) {
+            DieWithMessage("echo write failed on client");
+        }
+        uint64_t end = this->timer.getCpuCycle();
+        double msec = this->timer.cycleToMsSec(end - start);
+        cout <<  "echo " << bytesRead << "bytes......" << "time= "<< msec << " ms" << endl;
+        this->res.push_back(msec);
+    }
+
+    cout << "min/std   " << getAvg() << "/" << getStddev()<< endl;
+}
+
+
+
+unsigned short NWTest::checksum(void *b, int len){ 
+    unsigned short *buf = (unsigned short *)b;
+    unsigned int sum=0;
+    unsigned short result;
+
+    for ( sum = 0; len > 1; len -= 2 )
+      sum += *buf++;
+    if ( len == 1 )
+      sum += *(unsigned char*)buf;
+    sum = (sum >> 16) + (sum & 0xFFFF);
+    sum += (sum >> 16);
+    result = ~sum;
+    return result;
+}
+
+void NWTest::createTestFile() {
+    
+    char buf[1024 * 1024];
+    string path = "/Users/youzhenghong/test/file";
+
+    memset(buf, 0, sizeof(buf));
+
+    long inc = 5;
+    cout << " ready to create " << endl;
+    for (int i = 1; i < 20;i++) {
+        string fName = path + std::to_string(i) + ".txt";
+        char *cstr = new char[fName.length() + 1];
+
+        strcpy(cstr, fName.c_str());
+        cout << "writing to " << cstr << ".....size: ";
+        int fd = open(cstr, O_RDWR);
+        if(fd < 0) {
+            DieWithMessage("open fails");
+        }
+        double b = 0;
+        for (int i = 0; i < inc; i++) {
+            int cnt = 0;
+            for (int j = 0; j < 512; j++) {
+                if ((cnt=write(fd, buf, 1024 * 1024)) < 0) {
+                  DieWithMessage("write error");
+                }
+                b += cnt;
+            }
+            
+            
+        }
+        cout << b / (1024 * 1024 * 1024) << " GB" << endl;
+        close(fd);
+        inc++;
+        
+    }
+
+} 
+
+double NWTest::access(int fd) {
+    double cnt = 0;
+    char buf[4*1024*1024];;
+    int rd = 0;
+    while ((rd = read(fd, buf, sizeof(buf))) > 0) {
+
+        cnt += rd;
+    }
+    
+    return cnt;
+}
+
+
+void NWTest::testFileRead() {
+    resetNWTest();
+    
+    
+    
+    
+    char* result = "/Users/youzhenghong/test/result.txt";
+    
+    string path = "/Users/youzhenghong/test/file";
+    int fds;
+
+    double file_size = 0;
+    for (int i = 1; i < 25; i++) {
+        this->res.clear();
+        system("sync & echo 1995927 | sudo -S purge");
+        for (int j = 0; j < 30; j++) {
+            string fName = path + std::to_string(i) + ".txt";
+            char *cstr = new char[fName.length() + 1];
+            strcpy(cstr, fName.c_str());
+            fds = open(cstr, O_RDONLY);
+            uint64_t start = this->timer.getCpuCycle();
+            file_size = access(fds);
+            uint64_t end = this->timer.getCpuCycle();
+            close(fds);
+            double msec = this->timer.cycleToMsSec(end - start);
+            if (j > 2)
+              this->res.push_back(msec);
+        }
+
+        cout << "file size:  " << file_size/(1024*1024*1024) << " GB" << "------" << "time stat:  min/stddev   " << getAvg() << " / " << getStddev()<<endl;    
+        
+
+        
+    }
+    
+}
+
+
 
 
 /*************************************************************
