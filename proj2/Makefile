@@ -1,6 +1,5 @@
 CC=g++
 CFLAGS=-ggdb -std=c++11 -Wall -pedantic
-
 H_FILES=mmTest.hpp timer.hpp
 FILES=mm-main.cpp mmTest.cpp timer.cpp mm-latency.cpp
 
