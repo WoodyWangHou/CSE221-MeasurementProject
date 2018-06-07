@@ -11,6 +11,7 @@ implementation of testing procedures: context switching time measurement
 *******************************************************************************************/
 
 #include "mmTest.hpp"
+#include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -65,6 +66,7 @@ void MMTest::testPageFault(uint64_t iter){
     const uint64_t PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
     int fd = 0;
     char* data;
+    char c;
     uint64_t start = 0;
     uint64_t end = 0;
     double p_time = 0.0;
@@ -91,9 +93,11 @@ void MMTest::testPageFault(uint64_t iter){
     }
 
     this->timer.warmUp();
-    for(unsigned i = 0; i < iter; ++i){
+    const uint64_t offset = 4 * 1024 * PAGE_SIZE;
+    const uint64_t FILESIZE = iter * PAGE_SIZE;
+    for(unsigned i = 0; i < 100; ++i){
         start = this->timer.getCpuCycle();
-        data[i * PAGE_SIZE] = 'm';
+        data[(i * offset) % FILESIZE] = 'a';
         end = this->timer.getCpuCycle();
         p_time = this->timer.cycleToMsSec(end - start);
         this->res.push_back(p_time);
@@ -119,8 +123,8 @@ void MMTest::testReadBandwidth(uint64_t iter) {
 
   	this->timer.warmUp();
   	this->res.clear();
-  	
-  	
+
+
   	std::cout << "stride size is: " << sizeof(int) << " bytes" << std::endl;
   	long array[SZ];
   	long n;
@@ -196,7 +200,7 @@ void MMTest::testWriteBandwidth(uint64_t iter) {
 
   	this->timer.warmUp();
   	this->res.clear();
-  	
+
   	long carray[SZ] __attribute__((aligned (64)));
   	//int n;
   	memset(carray, 0, SZ * sizeof(long));

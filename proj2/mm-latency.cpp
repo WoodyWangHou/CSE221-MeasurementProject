@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 #include "mm-latency.hpp"
 using namespace std;
-
 using namespace std::chrono;
 
 #define LOOPS 10000000
