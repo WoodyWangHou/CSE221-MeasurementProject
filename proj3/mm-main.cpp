@@ -111,8 +111,8 @@ int main(int argc, char* arg[]){
   //test.testPingLocal(LOCAL_ITERATION);
   //test.createTestFile();
   //test.testFileRead();
-  test.testPingLocal(LOCAL_ITERATION);
-
+  //test.testPingLocal(LOCAL_ITERATION);
+  test.testPingRemote(LOCAL_ITERATION);
   
   return 0;
 }
