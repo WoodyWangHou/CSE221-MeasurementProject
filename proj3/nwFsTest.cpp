@@ -254,9 +254,9 @@ int NWTest::openFileWithNoCache(std::string fileNameBase, uint64_t fileSize){
     // }
 
     // OSX: no cache
-    if(fcntl(fd, F_NOCACHE, 1) < 0) {
-        DieWithMessage("fcntl() failed");
-    }
+    // if(fcntl(fd, F_NOCACHE, 1) < 0) {
+    //     DieWithMessage("fcntl() failed");
+    // }
     return fd;
 }
 
