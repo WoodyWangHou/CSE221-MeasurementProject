@@ -35,7 +35,7 @@ Timer::Timer(){
 
   uint64_t start = (((uint64_t)start_high << 32) | start_low );
   uint64_t end = (((uint64_t)end_high << 32) | end_low );
-  _cycles_per_ms = (end - start) / SLEEP_TIME_SEC / SEC_TO_MSEC;
+  _cycles_per_ms = ((end - start) / SLEEP_TIME_SEC) / SEC_TO_MSEC;
 }
 
 double Timer::cycleToMsSec(uint64_t cpu_cycle) {

@@ -13,9 +13,9 @@ main testing procedures
 #include <iostream>
 #include <unistd.h>
 #include <cstring>
-#include "nwTest.hpp"
+#include "nwFsTest.hpp"
+//#include "nwTest.hpp"
 
-const double BYTE_TO_MBYTE = 1024.0 * 1024.0;
 
 const std::string DELIMITER = "*******************************";
 void logHeader(std::string msg){
@@ -29,7 +29,8 @@ void log(std::string msg){
 }
 
 int main(int argc, char* arg[]){
-
+  double MBytes;
+  double stdv;
   NWTest test;
   std::string args;
   if(argc > 1){
@@ -37,7 +38,7 @@ int main(int argc, char* arg[]){
   }
 
   const uint64_t REMOTE_ITERATION = 10;
-  const uint64_t LOCAL_ITERATION = 100;
+  const uint64_t LOCAL_ITERATION = 10;
   std::string msg;
   // std::cout << args << std::endl;
   if(args.compare("-s") == 0){
@@ -46,41 +47,72 @@ int main(int argc, char* arg[]){
     exit(1);
   }
 
-  logHeader("Peak Bandwidth Measurement: Remote (AWS)");
-
-  test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
-  double MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
-  double stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
-  msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
-  log(msg);
-
-  msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
-  log(msg);
-
-  logHeader("Peak Bandwidth Measurement: Localhost");
-
-  test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
-  MBytes = (test.getAvg() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
-  stdv = (test.getStddev() / BYTE_TO_MBYTE) * static_cast<double>(SEC_TO_MSEC);
-  msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
-  log(msg);
-
-  msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
-  log(msg);
-
-  // auto p1 = test.setUpTearLocal();
-  // msg = "Measured Set up Local " + std::to_string(p1.first) + " sec";
+  // test localhost network peak bandwidth
+  // logHeader("Peak Bandwidth Measurement: Localhost");
+  //
+  // test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
+  // MBytes = test.getAvg();
+  // stdv = test.getStddev();
+  // msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
   // log(msg);
   //
-  // msg = "Measured Tear Down Local " + std::to_string(p1.second) + " sec";
+  // msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
   // log(msg);
   //
-  // auto p2 = test.setUpTearRemote();
-  // msg = "Measured Set up Remote " + std::to_string(p2.first) + " sec";
+  // // // test remote network peak bandwidth
+  // logHeader("Peak Bandwidth Measurement: Remote (AWS)");
+  //
+  // test.peakNetworkBandWidthTestRemote(REMOTE_ITERATION);
+  // MBytes = test.getAvg();
+  // stdv = test.getStddev();
+  // msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
   // log(msg);
   //
-  // msg = "Measured Tear Down Remote " + std::to_string(p2.second) + " sec";
+  // msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
   // log(msg);
+  //
+  // // Sequential File Read Time
+  // for(uint64_t filesize = 1; filesize <= 128; filesize  *= 2){
+  //
+  //     logHeader("File Read Sequential Access Time: " + std::to_string(filesize) + " Mbytes");
+  //
+  //     test.fileSequentialReadTest(LOCAL_ITERATION, filesize);
+  //     double tm = test.getAvg(); // local average file read time, msec/Mbytes
+  //     stdv = test.getStddev();
+  //     msg = "Measured File Read Sequential Access Time: " + std::to_string(tm) + " ms";
+  //     log(msg);
+  //
+  //     msg = "Measured File Read Sequential Access Standard Deviation: " + std::to_string(stdv) + " ms";
+  //     log(msg);
+  //
+  //     // Random File Read Time
+  //     logHeader("File Read Random Access Time: " + std::to_string(filesize) + " Mbytes");
+  //
+  //     test.fileRandomReadTest(LOCAL_ITERATION, filesize);
+  //     tm = test.getAvg(); // local average file read time, msec/Mbytes
+  //     stdv = test.getStddev();
+  //     msg = "Measured File Read Random Access Time: " + std::to_string(tm) + " ms";
+  //     log(msg);
+  //
+  //     msg = "Measured File Read Random Access Standard Deviation: " + std::to_string(stdv) + " ms";
+  //     log(msg);
+  // }
+
+
+
+  auto p1 = test.setUpTearLocal();
+  msg = "Measured Set up Local " + std::to_string(p1.first) + " sec";
+  log(msg);
+
+  msg = "Measured Tear Down Local " + std::to_string(p1.second) + " sec";
+  log(msg);
+
+  auto p2 = test.setUpTearRemote();
+  msg = "Measured Set up Remote " + std::to_string(p2.first) + " sec";
+  log(msg);
+
+  msg = "Measured Tear Down Remote " + std::to_string(p2.second) + " sec";
+  log(msg);
 
   return 0;
 }

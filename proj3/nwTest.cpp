@@ -38,7 +38,7 @@ double getTimeDif(const high_resolution_clock::time_point & t1, const high_resol
 /*****************************************************
 * Private Members Implementation:
 *****************************************************/
-int NWTest::createSocket(unsigned short servPort){
+int NWTestOld::createSocket(unsigned short servPort){
     // Create socket
     int servSock;
     if((servSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
@@ -48,7 +48,7 @@ int NWTest::createSocket(unsigned short servPort){
     return servSock;
 }
 
-void NWTest::bindSocket(int servSock, unsigned short servPort){
+void NWTestOld::bindSocket(int servSock, unsigned short servPort){
     // construct local address structure
     sockaddr_in servAddr;
     sockaddr * servAddr_t;
@@ -69,7 +69,7 @@ void NWTest::bindSocket(int servSock, unsigned short servPort){
     return;
 }
 
-void NWTest::HandleTCPClient(int clntSock){
+void NWTestOld::HandleTCPClient(int clntSock){
     // TODO: to be implemented
     char buffer[BUFSIZE];
     ssize_t numBytesRcvd;
@@ -85,7 +85,7 @@ void NWTest::HandleTCPClient(int clntSock){
     return;
 }
 
-void NWTest::connectSocket(int clntSock, std::string ip, unsigned short servPort){
+void NWTestOld::connectSocket(int clntSock, std::string ip, unsigned short servPort){
     struct sockaddr_in servAddr;
     sockaddr * servAddr_t;
 
@@ -106,7 +106,7 @@ void NWTest::connectSocket(int clntSock, std::string ip, unsigned short servPort
     return;
 }
 
-std::pair<double, double> NWTest::setUpTearLocal(){
+std::pair<double, double> NWTestOld::setUpTearLocal(){
   resetNWTest();
   int servSock = setUpSocket(BW_TEST_PORT, SEND_LOCAL);
   auto t1 = getTime();
@@ -116,7 +116,7 @@ std::pair<double, double> NWTest::setUpTearLocal(){
   return {testSetup, testTearDown};
 }
 
-std::pair<double, double> NWTest::setUpTearRemote(){
+std::pair<double, double> NWTestOld::setUpTearRemote(){
   resetNWTest();
   int servSock = setUpSocket(BW_TEST_PORT, SEND_REMOTE);
   auto t1 = getTime();
@@ -126,7 +126,7 @@ std::pair<double, double> NWTest::setUpTearRemote(){
   return {testSetup, testTearDown};
 }
 
-void NWTest::bandWidthMeasurement(int servSock, uint64_t iter){
+void NWTestOld::bandWidthMeasurement(int servSock, uint64_t iter){
     char buffer[BUFSIZE];
     ssize_t numBytes;
     memset(&buffer, 0, sizeof(buffer));
@@ -149,7 +149,7 @@ void NWTest::bandWidthMeasurement(int servSock, uint64_t iter){
 }
 
 
-int NWTest::setUpSocket(unsigned short servPort, int mode){
+int NWTestOld::setUpSocket(unsigned short servPort, int mode){
     int servSock = createSocket(servPort);
     auto t1 = getTime();
     auto t2 = getTime();
@@ -210,7 +210,7 @@ int NWTest::setUpSocket(unsigned short servPort, int mode){
 *****************************************************/
 
 
-double NWTest::getStddev() {
+double NWTestOld::getStddev() {
     if(res.empty()){
         return 0.0;
     }
@@ -225,7 +225,7 @@ double NWTest::getStddev() {
   	return sd;
 }
 
-double NWTest::getAvg(){
+double NWTestOld::getAvg(){
     if(res.empty()){
         return 0.0;
     }
@@ -243,12 +243,12 @@ double NWTest::getAvg(){
 * Peak Network BandWdith bandwidth Implementation:
 **************************************************************/
 
-void NWTest::peakNetworkBandWidthServer(){
+void NWTestOld::peakNetworkBandWidthServer(){
     // server
     setUpSocket(BW_TEST_PORT, LISTEN);
 }
 
-void NWTest::peakNetworkBandWidthTestLocal(uint64_t iter){
+void NWTestOld::peakNetworkBandWidthTestLocal(uint64_t iter){
     // local
     resetNWTest();
     int servSock = setUpSocket(BW_TEST_PORT, SEND_LOCAL);
@@ -256,7 +256,7 @@ void NWTest::peakNetworkBandWidthTestLocal(uint64_t iter){
     close(servSock);
 }
 
-void NWTest::peakNetworkBandWidthTestRemote(uint64_t iter){
+void NWTestOld::peakNetworkBandWidthTestRemote(uint64_t iter){
     // remote, remote ip is defined in hpp
     resetNWTest();
     int servSock = setUpSocket(BW_TEST_PORT, SEND_REMOTE);
