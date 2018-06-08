@@ -17,6 +17,7 @@ main testing procedures
 //#include "nwTest.hpp"
 
 
+
 const std::string DELIMITER = "*******************************";
 void logHeader(std::string msg){
   std::cout << DELIMITER << std::endl;
@@ -47,14 +48,25 @@ int main(int argc, char* arg[]){
     exit(1);
   }
 
+  // ping server
+  if(args.compare("-p") == 0){
+    // server
+    std::cout << "ping server running.....ready to test round trip ping" << std::endl;
+    test.pingTestServer();
+    exit(1);
+  }
+
+
+
   // test localhost network peak bandwidth
   // logHeader("Peak Bandwidth Measurement: Localhost");
-  //
+
   // test.peakNetworkBandWidthTestLocal(LOCAL_ITERATION);
   // MBytes = test.getAvg();
   // stdv = test.getStddev();
   // msg = "Measured Peak BandWidth Remote Average Throughput: " + std::to_string(MBytes) + " MByte/sec";
   // log(msg);
+
   //
   // msg = "Measured Peak BandWidth Remote Throughput Standard Deviation: " + std::to_string(stdv) + " MByte/sec";
   // log(msg);
