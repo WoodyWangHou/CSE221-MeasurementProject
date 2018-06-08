@@ -16,7 +16,7 @@
 #define NS 1000000
 #define BEGIN 4
 #define END 19
-#define P 60
+#define P 10
 
 
 #include <iostream>
@@ -97,7 +97,7 @@ long long readFile(char file[], int& fd) {
 
 void measureReadFilePerformance(){
     for (int i = BEGIN; i <= END; i++) {
-        string file ="/Users/tangjinhao/CSE221/CSE221-MeasurementProject/TestingData/RSRead/f";
+        string file ="../TestingData/RSRead/f";
         file += to_string(i) + ".txt";
         int n = file.length();
         char char_array[n+1];
@@ -112,23 +112,24 @@ void measureReadFilePerformance(){
 
 double contend(int i){
         //cout << i << endl;
-        string file ="/Users/tangjinhao/CSE221/CSE221-MeasurementProject/TestingData/Contention/f";
+        string file ="../TestingData/Contention/f";
         //string file ="/Users/tangjinhao/CSE221/CSE221-MeasurementProject/TestingData/RSRead/f";
-        //file += to_string(i + 1) + ".txt";
-        file +=  "1.txt";
+        file += to_string(i + 1) + ".txt";
+        //file +=  "1.txt";
         int n = file.length();
         char char_array[n+1];
         strcpy(char_array, file.c_str());
 
         int fd, iter;
         //iter = 10000;
-        auto t1 = getTime();
-        readFile(char_array, fd);
 
+        readFile(char_array, fd);
         sequentialAccess(fd,iter);
+        auto t1 = getTime();
+        randomAccess(fd,iter);
         auto t2 = getTime();
-        return iter;
-        //return double(getTimeDif(t1,t2)/ double(iter) * NS);
+        //return iter;
+        return double(getTimeDif(t1,t2)/ double(iter) * NS);
         //cout << getTimeDif(t1,t2)/ double(iter) * NS << endl;
         //cout << sequentialAccess(fd,iter) <<" us"<< endl;
         //cout << sequentialAccess(fd,iter) <<" us"<< endl;
@@ -174,7 +175,8 @@ void measureContention(int p){
     }
     auto t2 = getTime();
     //cout << value/double(p) << endl;
-    cout << getTimeDif(t1,t2) / value * NS<< endl;
+    //cout << getTimeDif(t1,t2) / value * NS<< endl;
+    cout << value / p<< endl;
 }
 
 void measureContention(){

@@ -29,8 +29,8 @@ void Latency::memlatency(){
       //vector<int> stridelist={4, 64, 256, 8192, 524288, 4194304, 16777216, 33554432};//33554432
       //vector<int> stridelist={4, 64, 256, 8192, 524288, 4194304, 16777216, 33554432};
 
-      vector<int> stridelist;//={64, 128,256, 1024, 1048576, 4194304, 16777216, 33554432};//33554432
-      for (int i = 2; i < 25; i++) {
+      vector<int> stridelist;// ={64, 128,256, 1024, 1048576, 4194304, 16777216, 33554432};//33554432
+      for (int i = 10; i < 25; i++) {
        stridelist.push_back(1<<i);
       }
 
@@ -38,28 +38,34 @@ void Latency::memlatency(){
       int value = 0;
       long index=0;
 
+      //string s = "[";
       for (int i = START; i < TOP; i++) {
               double MAX = 0;
               for (int x = 0; x < stridelist.size(); x++) {
-                  stride = stridelist[x] - 1;
-              size = 1 << i;
-              int* array = (int*)malloc(size);
-              // initialize the value
-              long arraysize = 1 << (i - 2);
-              for (int index = 0; index < arraysize; index++) {
-                  array[index] = (index + stride) % arraysize;
-              }
+                stride = stridelist[x] - 1;
+                size = 1 << i;
+                int* array = (int*)malloc(size);
+                // initialize the value
+                long arraysize = 1 << (i - 2);
+                for (int index = 0; index < arraysize; index++) {
+                    array[index] = (index + stride) % arraysize;
+                }
 
-              auto t1 = getTime();
-              for (long index = 0; index < LOOPS; index++) {
-                  value = array[value];
-              }
-              auto t2 = getTime();
-              double d = getTimeDif(t1,t2);
-                  MAX = max(MAX, d);
-          free(array);
-      }
+                auto t1 = getTime();
+                for (long index = 0; index < LOOPS; index++) {
+                    value = array[value];
+                }
+                auto t2 = getTime();
+                double d = getTimeDif(t1,t2);
+                MAX = max(MAX, d);
+                //cout <<i << " " << " " << d/ LOOPS * G << endl;
+                //cout << to_string(d/ LOOPS * G)+",";
+                //s += to_string(d/ LOOPS * G)+",";
+                free(array);
+          }
           cout <<i << " " << MAX/ LOOPS * G << endl;
       }
+      //s += "]";
+      //cout << s << endl;
 
 }

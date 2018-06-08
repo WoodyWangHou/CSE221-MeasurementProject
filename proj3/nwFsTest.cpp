@@ -46,7 +46,10 @@ std::pair<double, double> NWTest::setUpTearLocal(){
   resetNWTest();
   int servSock = setUpSocket(BW_TEST_PORT, SEND_LOCAL);
   auto t1 = getTime();
+  int t = 1;
   close(servSock);
+  setsockopt(servSock,SOL_SOCKET,SO_REUSEADDR,&t,sizeof(int));
+  //shutdown(servSock, 2);
   auto t2 = getTime();
   testTearDown = getTimeDif(t1,t2);
   return {testSetup, testTearDown};
@@ -56,7 +59,10 @@ std::pair<double, double> NWTest::setUpTearRemote(){
   resetNWTest();
   int servSock = setUpSocket(BW_TEST_PORT, SEND_REMOTE);
   auto t1 = getTime();
+  int t = 1;
   close(servSock);
+  setsockopt(servSock,SOL_SOCKET,SO_REUSEADDR,&t,sizeof(int));
+  //shutdown(servSock, 2);
   auto t2 = getTime();
   testTearDown = getTimeDif(t1,t2);
   return {testSetup, testTearDown};
